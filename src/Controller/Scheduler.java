@@ -1,11 +1,16 @@
+package Controller;
 /**
- * this is removed from the schedule since multiple schedulers may be needed for multiple elevators.
+ 
+* this is removed from the schedule since multiple schedulers may be needed for multiple elevators.
  * 
  * each elevator would need their own scheduler.
  */
 
 import java.util.Queue;
 import java.util.LinkedList;
+
+import View.Elevator;
+import View.Floors;
 
 /**
  * @author madelynkrasnay
@@ -15,9 +20,9 @@ public class Scheduler extends Thread {
 	
 	private Elevator elevator;
 	private Floors floors;
-	private Schedule schedule;
+	private Queue<Integer> schedule;
 	
-	public Scheduler(Elevator elevator, Floors floors, Schedule schedule) {
+	public Scheduler(Elevator elevator, Floors floors, Queue<Integer>  schedule) {
 		this.elevator = elevator;
 		this.floors = floors;
 		this.schedule = schedule;
@@ -26,17 +31,17 @@ public class Scheduler extends Thread {
 	//notify elevator of schedule change
 	
 	//Event Handeling_________________________________________________
-	//proforms nessacary tasks in responce to events
+	//Performs nessacary tasks in response to events
 	
-	//elevator stop request from foor
+	//elevator stop request from floor
 	//direction true = up
 	public void FloorButtonPress(int originFloor, boolean direction) {
 		//update schedule
 		synchronized(this.schedule){
-			schedule.add(originFloor);//for now just taging it to the end of the schedule
+			schedule.add(originFloor);//for now just tagging it to the end of the schedule
+			//this should look at the queue(s) and place it in an optimal location
 			//notify elevator
 			//notify floors the elevator is on its way
-			schedule.NotifyAll();
 		}
 	}
 	
@@ -66,7 +71,7 @@ public class Scheduler extends Thread {
 	
 	//elevator stopped
 	//let floors know
-	public void elevatorStopped(int floor) {
+	public void elevatorStopped(int floor, boolean direction) {
 		floors.elevatorArrived(floor, direction);
 	}
 	
@@ -79,7 +84,7 @@ public class Scheduler extends Thread {
 	//_________________________________________________________________
 	
 	public void run() {
-		//give floors and elevator a refrence to you
+		//give floors and elevator a reference to you
 		elevator.setScheduler(this);
 		elevator.setSchedule(this.schedule);
 		floors.setScheduler(this);

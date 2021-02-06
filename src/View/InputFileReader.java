@@ -1,3 +1,4 @@
+package View;
 /**
  * Calls appropreate event handeling methoids in 
  * elevator and floors to reflect each the entry in the 

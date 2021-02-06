@@ -1,3 +1,9 @@
+package View;
+
+import Controller.Scheduler;
+
+
+
 /**
  * The floor subsystem is used to simulate the arrival of passengers to the elevators and for simulating all button presses and lamps.
  * 
@@ -10,19 +16,21 @@
 public class Floors extends Thread {
 	
 	
-	//local state varables to reflect our ouputs:
+	//local state variables to reflect our outputs:
 	//an array of lamps for all floors where each 
 	//floor had 2 lamps: one for going up, one for going down.
 	private boolean [] [] lamps;
 	private boolean elevatorDirectionIndicator;
 	private int elevatorFloorIndicator;
 	
+	private Scheduler scheduler;
+	
 	
 	public Floors(int numberOfFloors) {
-		lamps = new boolean [numberOfLamps] [2];
+		lamps = new boolean [numberOfFloors] [2];
 	}
 	
-	public void setScheduler(Scheduer scheduler) {
+	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
 	
@@ -31,10 +39,10 @@ public class Floors extends Thread {
 	//floor is index in lamps array
 	//direction true = going up, false = going down
 	//state true=on
-	private void setLamp(int Floor, boolean direction, boolean state) {
-		lamps[floor][direction] = state;
+	private void setLamp(int floor, boolean direction, boolean state) {
+		lamps[floor][(direction? 1 : 0)] = state;
 		System.out.println("The lamp on floor "+ floor 
-				+ " for the direction " + boolean 
+				+ " for the direction " + state
 				+ " is now" + state);
 	}
 	
@@ -49,20 +57,20 @@ public class Floors extends Thread {
 	}
 	
 	//Event Handeling_________________________________________________
-	//proforms nessacary tasks in responce to events
+	//Performs nessacary tasks in response to events
 	
 	//a request for an elevator to visit this floor
 	//(true = up, false = down)
 	//floor = floor number the button is on
 	private void buttonPress( int floor, boolean direction) {
-		scheduler.floorButtonPress(floor, direction);
+		scheduler.FloorButtonPress(floor, direction);
 		System.out.println("Floor " + floor 
 				+ " requested an elevator going " + direction);
 		
 	}
 	
-	//elevator arived
-	public void elevatorArrived( int floor, bool direction) {
+	//elevator arrived
+	public void elevatorArrived( int floor, boolean direction) {
 		System.out.println("An elevator arrived at " + floor 
 				+ " going " + direction);
 		setLamp(floor, direction, false);
@@ -82,7 +90,7 @@ public class Floors extends Thread {
 	
 	//run()
 	//should wait to be notified by the scheduler
-	//should notify arivals as they appear in the floor input file
+	//should notify arrivals as they appear in the floor input file
 	public void run() {
 		while(true) {
 			

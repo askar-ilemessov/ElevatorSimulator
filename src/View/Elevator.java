@@ -1,4 +1,7 @@
-import Threads.Table;
+package View;
+
+import java.util.Queue;
+import Controller.Scheduler;
 
 /**
  * @author madelynkrasnay
@@ -11,7 +14,7 @@ public class Elevator extends Thread {
 	//elevator state varibles
 	//lamps (true = on) (index = floor)
 	private boolean [] lamps;
-	//motor (0=stoped, 1=moving up, 2=moving down)
+	//motor (0=stopped, 1=moving up, 2=moving down)
 	private int motor;
 	//door (true = open)
 	private boolean door;
@@ -19,28 +22,28 @@ public class Elevator extends Thread {
 	private int currentFloor;
 	private boolean currentDirection;
 	
-	private Schedule schedule;
+	private Queue<Integer>  schedule;
 	private Integer destination = null;
 	
 	
-	public Elevator(int numberOffloors) {
-		lamps = new boolean[numberOfLamps];
+	public Elevator(int numberOfFloors) {
+		lamps = new boolean[numberOfFloors];
 		motor = 0; //sttionary
 		door = false; //door closed
 	}
 	
-	public void setSchedule(Schedule schedule) {
+	public void setSchedule(Queue<Integer>  schedule) {
 		this.schedule = schedule;
 	}
 	
-	public void setScheduler(Scheduer scheduler) {
+	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
 	
 	
 	//floor is index in lamps array
 	//state (true=on)
-	private void setLamp(int floor, bool state) {
+	private void setLamp(int floor, boolean state) {
 		lamps[floor]=state;
 	}
 	
@@ -57,7 +60,7 @@ public class Elevator extends Thread {
 		
 	}
 	
-	private void setFloor(int floor) {
+	private void setCurrentFloor(int floor) {
 		currentFloor = floor;
 		
 	}
@@ -76,7 +79,8 @@ public class Elevator extends Thread {
 	
 	//stop requested
 	//updates sceduler of an interternal floor button was pressed
-	private void buttonPress(int destinationFloor) {
+	//call in floors according to input file
+	public void buttonPress(int destinationFloor) {
 		
 	}
 	
@@ -84,7 +88,7 @@ public class Elevator extends Thread {
 	//floor change as a resault of regular motion (
 	//location = floor number)
 	private void locationUpdate(int location) {
-		setCurrentLocation(location):
+		setCurrentFloor(location);
 		System.out.println("Elevator now at floor "+ location);
 		//update scheduler
 		
@@ -97,7 +101,7 @@ public class Elevator extends Thread {
 		setMotor(0);
 		System.out.println("Elevator stopped at floor " + location);
 		//update scheduler
-		scheduler.stopped(location, CurrentDirection);
+		scheduler.elevatorStopped(location, currentDirection);
 		
 		//open doors
 		//wait to load
@@ -117,7 +121,7 @@ public class Elevator extends Thread {
 	
 	private void scheduleNewDestination() {
 		//set Destination to the top of the queue and pop
-		this.destination = schedule.remove;
+		this.destination = schedule.remove();
 	}
 	
 	//request new destination from sechduler
@@ -130,17 +134,27 @@ public class Elevator extends Thread {
 	
 	
 	private void travelToDestination() {
-		while(currentfloor != destination) {
+		while(currentFloor != destination) {
 			if (currentFloor < destination){
 				 //go up a floor
-				sleep(500);//however long we decide it take for an elevator to climb a floor
-				setFloor(currentFloor++);
+				setDirection(true);
+				setMotor(1);//move this into setter once wont cause a merge conflict with tests
+				try {
+					sleep(500);//however long we decide it take for an elevator to climb a floor
+				} catch (InterruptedException e) {
+				}//however long we decide it take for an elevator to climb a floor
+				setCurrentFloor(currentFloor++);
 				
 			}
 			else if(currentFloor > destination){
 				//go down a floor
-				sleep(500);//however long we decide it take for an elevator to decend a floor
-				setFloor(currentFloor--);
+				setDirection(false);
+				setMotor(2);
+				try {
+					sleep(500);//however long we decide it take for an elevator to decend a floor
+				} catch (InterruptedException e) {
+				}
+				setCurrentFloor(currentFloor--);
 			}
 			System.out.println("Elevator is now at floor "+ destination);
 		}
@@ -148,6 +162,11 @@ public class Elevator extends Thread {
 	
 	//run()
 	public void run() {
+		//give the Scheduler a second to set the scheduler
+		try {
+			sleep(500);
+		} catch (InterruptedException e) {
+		}
 		while(true) {
 				if(destination == null){
 					//tell the seheduler
@@ -163,21 +182,22 @@ public class Elevator extends Thread {
 						}
 						scheduleNewDestination();
 						this.schedule.notifyAll();
-				}
-			else {
-				//go to destination
-				//get new destination
-				if(currentFloor = destination) {
-					//stop
-					this.destination = null;
-					this.stopped(currentFloor);
-					this.scheduleNewDestination();
+					}
 				}
 				else {
-					 //go up
-					travelToDestination();
+					//go to destination
+					//get new destination
+					if(currentFloor == destination) {
+						//stop
+						this.destination = null;
+						this.stopped(currentFloor);
+						this.scheduleNewDestination();
+					}
+					else {
+						 //go up
+						travelToDestination();
+					}
 				}
-			}
 		}
 	}
 }
