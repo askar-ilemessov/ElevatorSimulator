@@ -30,11 +30,13 @@ public class Floors extends Thread {
 	//(true = up, false = down)
 	//floor = floor number the button is on
 	private void buttonPress( int floor, bool direction) {
+		System.out.println("Floor %d requested an elevator going %d", floor, direction);
 		
 	}
 	
 	//elevator arived
 	private void elevatorArrived( int floor, bool direction) {
+		System.out.println("Floor %d elevator has arrived going %d", floor, direction);
 		setLamp(floor, direction, false);
 		
 	}

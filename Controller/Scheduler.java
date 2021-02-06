@@ -1,5 +1,7 @@
 /**
+ * this is removed from the schedule since multiple schedulers may be needed for multiple elevators.
  * 
+ * each elevator would need their own scheduler.
  */
 
 /**
@@ -8,28 +10,58 @@
  */
 public class Scheduler extends Thread {
 	
-	//constructor
+	private Elevator elevator;
+	private Floors floors;
+	
+	public Scheduler(Elevator elevator, Floors floors) {
+		this.elevator = elevator;
+		this.floors = floors;
+	}
+	
+	//notify elevator of schedule change
 	
 	//Event Handeling_________________________________________________
 	//proforms nessacary tasks in responce to events
 	
 	//elevator stop request from foor
-	private void buttonPress(int destinationFloor) {
-		
+	//direction true = up
+	public void FloorButtonPress(int originFloor, boolean direction) {
+		//update schedule
+		//notify appropreate elevator
+		//notify floors the elevator is on its way
 	}
 	
 	//elevator stop request from elevator
-	private void buttonPress(int destinationFloor) {
+	public void elevatorButtonPressed(int Floor) {
+		///update schedule
+		//notify appropreate elevator
 	
 	}
 	
-	//State updates from elevator
-	//stopped
+	//State updates from elevator:
+	//notify floors / elevator where applicable
+	
+	//location updated
+	//update floors
+	
+	//direction updated
+	//update floors
+	
+	//elevator stopped
+	//let floors know
+	public void stopped(int floor) {
+		floors.elevatorArrived(floor, direction);
+	}
+	
 	//resuming motion
 	
 	//_________________________________________________________________
 	
 	public void run() {
+		//set floor and elivator up
+		while(true) {
+			
+		}
 	}
 
 }
