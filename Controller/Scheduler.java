@@ -4,6 +4,9 @@
  * each elevator would need their own scheduler.
  */
 
+import java.util.Queue;
+import java.util.LinkedList;
+
 /**
  * @author madelynkrasnay
  *
@@ -14,10 +17,10 @@ public class Scheduler extends Thread {
 	private Floors floors;
 	private Schedule schedule;
 	
-	public Scheduler(Elevator elevator, Floors floors) {
+	public Scheduler(Elevator elevator, Floors floors, Schedule schedule) {
 		this.elevator = elevator;
 		this.floors = floors;
-		this.schedule = new Schedule();
+		this.schedule = schedule;
 	}
 	
 	//notify elevator of schedule change
@@ -29,15 +32,18 @@ public class Scheduler extends Thread {
 	//direction true = up
 	public void FloorButtonPress(int originFloor, boolean direction) {
 		//update schedule
-		//notify appropreate elevator
+		schedule.add(originFloor);
+		//notify elevator
+		
 		//notify floors the elevator is on its way
 	}
 	
 	//elevator stop request from elevator
-	public void elevatorButtonPressed(int Floor) {
+	public void elevatorButtonPressed(int floor) {
 		///update schedule
-		//notify appropreate elevator
-	
+		schedule.add(floor);
+		//notify elevator
+		//schedule.NotifyAll();
 	}
 	
 	//State updates from elevator:
@@ -53,6 +59,10 @@ public class Scheduler extends Thread {
 	//let floors know
 	public void stopped(int floor) {
 		floors.elevatorArrived(floor, direction);
+	}
+	
+	public void elevatorRequestsWork() {
+		
 	}
 	
 	//resuming motion

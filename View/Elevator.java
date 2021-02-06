@@ -1,26 +1,4 @@
-/**
- * The  elevator  subsystem  consists  of  the  buttons  and  lamps 
- * inside  of  the  elevator  used  to  select  floors  and indicate 
- * the floors selected, and to indicate the location of the elevator 
- * itself.   
- * 
- * The elevator subsystem is also used to operate the motor and to 
- * open and close the doors.  Each elevator has its own elevator 
- * subsystem. 
- * 
- * For  the  purpose  of  this  project,  the  elevator  subsystem 
- * listens  for  packets  from  the  scheduler  to  control  the 
- * motor and to open the doors.   The elevator subsystem also has 
- * to monitor the floor subsystem for destination requests (button 
- * presses inside of the elevator car, rather than button presses at 
- * the floors) from the input file.  Button presses are to be rerouted 
- * to the scheduler system.       Lamp (floor indications) from button 
- * pushes do not have to originate from the scheduler.   Rather, when 
- * the elevator subsystem detects a button request, it can then  light  
- * the  corresponding  lamp.   When  the  elevator  reaches  a  floor,  
- * the  scheduling  subsystem  signals  the elevator subsystem to turn 
- * the lamp off.
- */
+import Threads.Table;
 
 /**
  * @author madelynkrasnay
@@ -107,7 +85,7 @@ public class Elevator extends Thread {
 	//location = floor number)
 	private void locationUpdate(int location) {
 		setCurrentLocation(location):
-		System.out.println("Elevator now at floor %d", location);
+		System.out.println("Elevator now at floor "+ location);
 		//update scheduler
 		
 	}
@@ -117,7 +95,7 @@ public class Elevator extends Thread {
 	//(location = floor number)
 	private void stopped(int location) {
 		setMotor(0);
-		System.out.println("Elevator stopped at floor %d", location);
+		System.out.println("Elevator stopped at floor " + location);
 		//update scheduler
 		scheduler.stopped(location, CurrentDirection);
 		
@@ -138,13 +116,15 @@ public class Elevator extends Thread {
 	//_________________________________________________________________
 	
 	private void scheduleNewDestination() {
-		//set Destination to the top of the queue
+		//set Destination to the top of the queue and pop
+		this.destination = schedule.remove;
 	}
 	
 	//request new destination from sechduler
 	//will be updated when there is new work on the queue
 	//kinda redundant as the  but nessacary as per assignment doc
 	private void requestWork() {
+		scheduler.elevatorRequestsWork();
 		System.out.println("Elevator is on standby");
 	}
 	
@@ -162,23 +142,28 @@ public class Elevator extends Thread {
 				sleep(500);//however long we decide it take for an elevator to decend a floor
 				setFloor(currentFloor--);
 			}
-			System.out.println("Elevator is now at floor %d", destination);
+			System.out.println("Elevator is now at floor "+ destination);
 		}
-		
 	}
 	
 	//run()
 	public void run() {
 		while(true) {
-			if(destination == null) {
-				scheduleNewDestination();
-				//if its still null
 				if(destination == null){
-					//tell the seheduler and wait
+					//tell the seheduler
 					requestWork();
 					//wait() on schedule object
+					synchronized(this.schedule){
+						while(this.schedule.peek() == null) {
+							try{
+								this.schedule.wait();
+							}
+							catch(Exception e){	
+							}
+						}
+						scheduleNewDestination();
+						this.schedule.notifyAll();
 				}
-			}
 			else {
 				//go to destination
 				//get new destination
