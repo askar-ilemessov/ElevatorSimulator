@@ -12,10 +12,12 @@ public class Scheduler extends Thread {
 	
 	private Elevator elevator;
 	private Floors floors;
+	private Schedule schedule;
 	
 	public Scheduler(Elevator elevator, Floors floors) {
 		this.elevator = elevator;
 		this.floors = floors;
+		this.schedule = new Schedule();
 	}
 	
 	//notify elevator of schedule change
@@ -58,7 +60,10 @@ public class Scheduler extends Thread {
 	//_________________________________________________________________
 	
 	public void run() {
-		//set floor and elivator up
+		//give floors and elevator a refrence to you
+		elevator.setScheduler(this);
+		elevator.setSchedule(this.schedule);
+		floors.setScheduler(this);
 		while(true) {
 			
 		}

@@ -28,6 +28,8 @@
  */
 public class Elevator extends Thread {
 	
+	private Scheduler scheduler;
+	
 	//elevator state varibles
 	//lamps (true = on) (index = floor)
 	private boolean [] lamps;
@@ -39,6 +41,7 @@ public class Elevator extends Thread {
 	private int currentFloor;
 	private boolean currentDirection;
 	
+	private Schedule schedule;
 	private Integer destination = null;
 	
 	
@@ -46,10 +49,16 @@ public class Elevator extends Thread {
 		lamps = new boolean[numberOfLamps];
 		motor = 0; //sttionary
 		door = false; //door closed
-		currentFloor = 0;//at floor zero
 	}
 	
-	//set scheduler
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
+	
+	public void setScheduler(Scheduer scheduler) {
+		this.scheduler = scheduler;
+	}
+	
 	
 	//floor is index in lamps array
 	//state (true=on)
@@ -104,6 +113,7 @@ public class Elevator extends Thread {
 	}
 	
 	//stoped at a floor 
+	//opens the doors, lets people load and closes them again
 	//(location = floor number)
 	private void stopped(int location) {
 		setMotor(0);
@@ -114,7 +124,6 @@ public class Elevator extends Thread {
 		//open doors
 		//wait to load
 		//close doors
-		//schdule new destination
 	}
 	
 	//resuming motion
@@ -139,7 +148,24 @@ public class Elevator extends Thread {
 		System.out.println("Elevator is on standby");
 	}
 	
-	//get new destination from the top of the apropreate queue
+	
+	private void travelToDestination() {
+		while(currentfloor != destination) {
+			if (currentFloor < destination){
+				 //go up a floor
+				sleep(500);//however long we decide it take for an elevator to climb a floor
+				setFloor(currentFloor++);
+				
+			}
+			else if(currentFloor > destination){
+				//go down a floor
+				sleep(500);//however long we decide it take for an elevator to decend a floor
+				setFloor(currentFloor--);
+			}
+			System.out.println("Elevator is now at floor %d", destination);
+		}
+		
+	}
 	
 	//run()
 	public void run() {
@@ -155,16 +181,18 @@ public class Elevator extends Thread {
 			}
 			else {
 				//go to destination
-				if(current floor = destination) {
+				//get new destination
+				if(currentFloor = destination) {
 					//stop
+					this.destination = null;
+					this.stopped(currentFloor);
+					this.scheduleNewDestination();
 				}
-				else >
-				 //go down
-				else <
-					//go up
+				else {
+					 //go up
+					travelToDestination();
+				}
 			}
 		}
-		
 	}
-
 }

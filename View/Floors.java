@@ -9,10 +9,17 @@
  */
 public class Floors extends Thread {
 	
+	
 	//local state varables to reflect our ouputs:
 	//an array of lamps for all floors
 	
-	//constructor
+	public Floors() {
+		
+	}
+	
+	public void setScheduler(Scheduer scheduler) {
+		this.scheduler = scheduler;
+	}
 	
 	//state management_______________________________________________
 	
@@ -48,6 +55,9 @@ public class Floors extends Thread {
 	//should wait to be notified by the scheduler
 	//should notify arivals as they appear in the floor input file
 	public void run() {
+		while(true) {
+			
+		}
 	}
 
 }
