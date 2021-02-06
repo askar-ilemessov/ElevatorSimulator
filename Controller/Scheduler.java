@@ -32,10 +32,12 @@ public class Scheduler extends Thread {
 	//direction true = up
 	public void FloorButtonPress(int originFloor, boolean direction) {
 		//update schedule
-		schedule.add(originFloor);
-		//notify elevator
-		
-		//notify floors the elevator is on its way
+		synchronized(this.schedule){
+			schedule.add(originFloor);//for now just taging it to the end of the schedule
+			//notify elevator
+			//notify floors the elevator is on its way
+			schedule.NotifyAll();
+		}
 	}
 	
 	//elevator stop request from elevator
@@ -51,18 +53,25 @@ public class Scheduler extends Thread {
 	
 	//location updated
 	//update floors
+	public void elevatorLocationUpdated(int floor) {
+		floors.elevatorLocationUpdated(floor);
+	}
+	
 	
 	//direction updated
 	//update floors
+	public void elevatorDirectionUpdated(boolean direction) {
+		floors.elevatorDirectionUpdated(direction);
+	}
 	
 	//elevator stopped
 	//let floors know
-	public void stopped(int floor) {
+	public void elevatorStopped(int floor) {
 		floors.elevatorArrived(floor, direction);
 	}
 	
 	public void elevatorRequestsWork() {
-		
+		//do nothing for now
 	}
 	
 	//resuming motion
