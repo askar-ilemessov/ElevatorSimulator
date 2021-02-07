@@ -1,13 +1,8 @@
 package View;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Scanner;
 /**
- * Calls appropriate event handling methods in 
+ * Calls appropreate event handeling methoids in 
  * elevator and floors to reflect each the entry in the 
- * input file at the appropriate time.
+ * input file at the apropreate time.
  */
 
 /**
@@ -15,6 +10,7 @@ import java.util.Scanner;
  *
  */
 public class InputFileReader {
+<<<<<<< HEAD
 	
 	
 	//parses Input file into an a
@@ -58,4 +54,7 @@ public class InputFileReader {
 	} 
 }
 
+=======
+>>>>>>> bdc4f42b6d1d0809d5d094f363be4ed7b64b4a97
 
+}
