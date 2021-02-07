@@ -30,9 +30,9 @@ public class InputFileReader {
 			       String [] line = (sc.nextLine().split(" "));
 			       
 			       String[] timeString = line[0].split(":");
-			       long instrTime = Integer.parseInt(timeString[1]) + 
-			    		   Integer.parseInt(timeString[2])*60 + 
-			    		   Integer.parseInt(timeString[0])*60*60;
+			       //long instrTime = Integer.parseInt(timeString[1]) + 
+			    	//	   Integer.parseInt(timeString[2])*60 + 
+			    	//	   Integer.parseInt(timeString[0])*60*60;
 			       
 			       int originFloor = Integer.parseInt(line[1]);
 			       

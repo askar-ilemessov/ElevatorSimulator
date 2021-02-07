@@ -2,6 +2,7 @@ package Controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ class SchedulerTest {
 	
 	private Elevator elevator;
 	private Floors floors;
-	private Queue <Integer> schedule;
+	private Queue <Integer> schedule = new LinkedList<>();
 	private Scheduler scheduler = new Scheduler(elevator,floors,schedule);
 
 

@@ -20,7 +20,7 @@ public class Scheduler extends Thread {
 	
 	private Elevator elevator;
 	private Floors floors;
-	private Queue<Integer> schedule;
+	private Queue<Integer> schedule = new LinkedList<>();
 	
 	public Scheduler(Elevator elevator, Floors floors, Queue<Integer>  schedule) {
 		this.elevator = elevator;
@@ -98,3 +98,4 @@ public class Scheduler extends Thread {
 	}
 
 }
+

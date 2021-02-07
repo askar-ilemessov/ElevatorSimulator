@@ -106,6 +106,11 @@ public class Floors extends Thread {
 	//should wait to be notified by the scheduler
 	//should notify arrivals as they appear in the floor input file
 	public void run() {
+		try {
+			sleep(100);
+		} catch (InterruptedException e) {
+			
+		}
 		while(true) {
 			
 		}
