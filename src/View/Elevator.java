@@ -41,6 +41,7 @@ public class Elevator extends Thread {
 	}
 	
 	
+	
 	//floor is index in lamps array
 	//state (true=on)
 	private void setLamp(int floor, boolean state) {
@@ -53,6 +54,10 @@ public class Elevator extends Thread {
 		
 	}
 	
+	public int getMotor() {
+		return motor;
+	}
+	
 	//(true=open)
 	private void setDoor(boolean state) {
 		door = state;
@@ -63,6 +68,11 @@ public class Elevator extends Thread {
 	private void setCurrentFloor(int floor) {
 		currentFloor = floor;
 		
+	}
+	
+	
+	public int getCurrentFloor() {
+		return currentFloor;
 	}
 	
 	//true = up
@@ -87,7 +97,7 @@ public class Elevator extends Thread {
 	//called perodically when in motion
 	//floor change as a resault of regular motion (
 	//location = floor number)
-	private void locationUpdate(int location) {
+	public void locationUpdate(int location) {
 		setCurrentFloor(location);
 		System.out.println("Elevator now at floor "+ location);
 		//update scheduler
@@ -97,7 +107,7 @@ public class Elevator extends Thread {
 	//stoped at a floor 
 	//opens the doors, lets people load and closes them again
 	//(location = floor number)
-	private void stopped(int location) {
+	public void stopped(int location) {
 		setMotor(0);
 		System.out.println("Elevator stopped at floor " + location);
 		//update scheduler

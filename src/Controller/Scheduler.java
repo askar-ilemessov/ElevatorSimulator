@@ -45,6 +45,10 @@ public class Scheduler extends Thread {
 		}
 	}
 	
+	public Queue<Integer> getQueue() {
+		return schedule;
+	}
+	
 	//elevator stop request from elevator
 	public void elevatorButtonPressed(int floor) {
 		///update schedule

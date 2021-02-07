@@ -46,15 +46,29 @@ public class Floors extends Thread {
 				+ " is now" + state);
 	}
 	
+	public boolean getLampValue(int floor, boolean direction) {
+		return lamps[floor][(direction? 1 : 0)];
+	}
+	
 	private void setElevatorFloorIndicator(int floor) {
 		elevatorFloorIndicator = floor;
 		System.out.println("Floors' elevator location indicator now reads " + elevatorFloorIndicator);
+	}
+	
+	
+	public int getElevatorFloorIndicator() {
+		return elevatorFloorIndicator;
 	}
 	
 	private void setElevatorDirectionIndicator(boolean direction) {
 		elevatorDirectionIndicator = direction;
 		System.out.println("Floors' direction location indicator now reads " + elevatorDirectionIndicator);
 	}
+	
+	public boolean getElevatorDirectionIndicator() {
+		return elevatorDirectionIndicator;
+	}
+	
 	
 	//Event Handeling_________________________________________________
 	//Performs nessacary tasks in response to events
