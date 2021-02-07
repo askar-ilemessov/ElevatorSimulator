@@ -2,8 +2,11 @@ package Controller;
 
 import java.util.Queue;
 import java.util.LinkedList;
+import java.io.File;
+
 import View.Elevator;
 import View.Floors;
+import View.InputFileReader;
 
 /**
  * 
@@ -38,6 +41,12 @@ class Main {
 		elevator1Thread.start();
 		floorsThread.start();
 		schedulerThread.start();
+		
+		
+		//read in file and send out new arrivals
+		File file = new File("src/model/InputFile.txt");
+		InputFileReader inputReader = new InputFileReader();
+		inputReader.readInFile(file);
 
 	}
 

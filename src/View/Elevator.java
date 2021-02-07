@@ -11,7 +11,7 @@ public class Elevator extends Thread {
 	
 	private Scheduler scheduler;
 	
-	//elevator state varibles
+	//elevator state variables
 	//lamps (true = on) (index = floor)
 	private boolean [] lamps;
 	//motor (0=stopped, 1=moving up, 2=moving down)
@@ -28,7 +28,7 @@ public class Elevator extends Thread {
 	
 	public Elevator(int numberOfFloors) {
 		lamps = new boolean[numberOfFloors];
-		motor = 0; //sttionary
+		motor = 0; //Stationary
 		door = false; //door closed
 	}
 	
@@ -169,7 +169,7 @@ public class Elevator extends Thread {
 		}
 		while(true) {
 				if(destination == null){
-					//tell the seheduler
+					//tell the scheduler
 					requestWork();
 					//wait() on schedule object
 					synchronized(this.schedule){
