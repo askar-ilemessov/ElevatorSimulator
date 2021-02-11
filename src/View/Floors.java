@@ -107,7 +107,7 @@ public class Floors extends Thread {
 	//should notify arrivals as they appear in the floor input file
 	public void run() {
 		try {
-			sleep(100);
+			sleep(500);
 		} catch (InterruptedException e) {
 			
 		}
