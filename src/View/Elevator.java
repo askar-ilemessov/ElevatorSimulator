@@ -1,5 +1,6 @@
 package View;
 
+import java.util.ArrayList;
 import java.util.Queue;
 import Controller.Scheduler;
 
@@ -24,6 +25,36 @@ public class Elevator extends Thread {
 	
 	private Queue<Integer>  schedule;
 	private Integer destination = null;
+	
+	
+	private int time=0;
+
+//	
+//	public void readData(ArrayList<Object> list) {
+//		time = (int) list.get(0);
+//		currentFloor = (int) list.get(1);
+//		currentDirection = (boolean) list.get(2);
+//		destination = (int) list.get(3);
+//	}
+	
+	
+	
+	public void readData(ArrayList<Object> list) {
+		
+	
+		for (int i = 0; i < list.size(); i++) { 
+            for (int j = 0; j < ((ArrayList<Object>) list.get(i)).size(); j++) {
+            	time = (int) ((ArrayList<Object>) list.get(i)).get(0);
+            	currentFloor = (int) ((ArrayList<Object>) list.get(i)).get(1);
+            	currentDirection = (boolean) ((ArrayList<Object>) list.get(i)).get(2);
+            	destination = (int) ((ArrayList<Object>) list.get(i)).get(3);
+                //System.out.print(list.get(i).get(j) + " "); 
+            } 
+            System.out.println(); 
+        }
+	}
+	
+	
 	
 	
 	public Elevator(int numberOfFloors) {
