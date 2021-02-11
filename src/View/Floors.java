@@ -1,5 +1,7 @@
 package View;
 
+import java.util.ArrayList;
+
 import Controller.Scheduler;
 
 
@@ -24,6 +26,33 @@ public class Floors extends Thread {
 	private int elevatorFloorIndicator;
 	
 	private Scheduler scheduler;
+	
+	
+	
+	private int time=0;
+	private int originFloor=0;
+	private boolean direction;
+	private int destinationFloor;
+	
+	public void readData(ArrayList<Object> list) {
+		
+		
+		for (int i = 0; i < list.size(); i++) { 
+            for (int j = 0; j < ((ArrayList<Object>) list.get(i)).size(); j++) {
+            	time = (int) ((ArrayList<Object>) list.get(i)).get(0);
+            	originFloor = (int) ((ArrayList<Object>) list.get(i)).get(1);
+            	elevatorDirectionIndicator = (boolean) ((ArrayList<Object>) list.get(i)).get(2);
+            	destinationFloor = (int) ((ArrayList<Object>) list.get(i)).get(3);
+                //System.out.print(list.get(i).get(j) + " "); 
+            } 
+            System.out.println(); 
+        }
+	}
+	
+	
+	
+	
+	
 	
 	
 	public Floors(int numberOfFloors) {

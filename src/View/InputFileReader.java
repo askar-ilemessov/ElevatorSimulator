@@ -5,56 +5,85 @@ package View;
  * input file at the apropreate time.
  */
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 /**
- * @author madelynkrasnay
+ * @author madelynkrasnay danish1371
  *
  */
 public class InputFileReader {
-<<<<<<< HEAD
 	
 	
 	//parses Input file into an a
-	public void readInFile(File file) 
+	public ArrayList<Object> readInFile(File file) throws FileNotFoundException 
 	{ 
 		
-		DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+		//File file = new File("./InputFile.txt");
+		Scanner scan = new Scanner(file);
+
+		ArrayList<Object> information = new ArrayList<Object>();
+
+		while (scan.hasNextLine()) {
+			
+			ArrayList<Object> info = new ArrayList<>();
+
+			String line = scan.nextLine();
+			String[] fileInfo = line.split(" ");
 		
-		Scanner sc = null;
-		try {
-			sc = new Scanner(file);
-			while (sc.hasNextLine()) {
-			       String [] line = (sc.nextLine().split(" "));
-			       
-			       String[] timeString = line[0].split(":");
-			       //long instrTime = Integer.parseInt(timeString[1]) + 
-			    	//	   Integer.parseInt(timeString[2])*60 + 
-			    	//	   Integer.parseInt(timeString[0])*60*60;
-			       
-			       int originFloor = Integer.parseInt(line[1]);
-			       
-			       if (line[2]=="up") {
-			    	   boolean direction = true;
-			       }
-			       else if (line[2]=="down") {
-			    	   boolean direction = false;
-			       }
-			       else{
-			    	   //break nicely
-			       }
-			       
-			       int destinationFloor = Integer.parseInt(line[3]);
-			       
-			       //put instrtime, origin floor, direction, and destination as 
-			       //an instruction into some kind of queue
-			       
-			  } 
-		} catch (FileNotFoundException e) {
-		} 
-		  
-	} 
+				if (fileInfo.length == 4) {
+
+					//Time
+					String time = fileInfo[0];
+					String[] timeValues = time.split(":");
+					if(timeValues.length == 3) {
+						int hours = Integer.parseInt(timeValues[0]);
+						int minutes = Integer.parseInt(timeValues[1]);
+						int seconds = Integer.parseInt(timeValues[2]);
+						
+						int timeInSeconds = (hours*60*60) +(minutes*60) +seconds;
+						info.add(timeInSeconds);
+						
+					}else {
+						System.out.println("Incorrect input for time");
+					}
+					
+					
+					//Original Floor Number
+					int intialFloorNumber = Integer.parseInt(fileInfo[1]);
+					info.add(intialFloorNumber);
+					
+					//Direction
+					String value = fileInfo[2];
+					boolean direction;
+					
+					if(value.equals("Up")) {
+						direction=true;
+					}else {
+						direction = false;
+					}
+					info.add(direction);
+					
+					//Destination Floor
+					int destinationFloorNumber = Integer.parseInt(fileInfo[3]);
+					info.add(destinationFloorNumber);
+
+					information.add(info);
+
+				} else {
+					System.out.print("Correct inputs not receieved. \n");
+					
+				}
+		
+		}
+		scan.close();
+		return information;
+	}
+	
 }
 
-=======
->>>>>>> bdc4f42b6d1d0809d5d094f363be4ed7b64b4a97
 
-}
