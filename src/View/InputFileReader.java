@@ -40,7 +40,7 @@ public class InputFileReader {
 					//Time
 					String time = fileInfo[0];
 					String[] timeValues = time.split(":");
-					if(timeValues.length == 4) {
+					if(timeValues.length == 3) {
 						int hours = Integer.parseInt(timeValues[0]);
 						int minutes = Integer.parseInt(timeValues[1]);
 						int seconds = Integer.parseInt(timeValues[2]);
@@ -61,7 +61,7 @@ public class InputFileReader {
 					String value = fileInfo[2];
 					boolean direction;
 					
-					if(value=="Up") {
+					if(value.equals("Up")) {
 						direction=true;
 					}else {
 						direction = false;
