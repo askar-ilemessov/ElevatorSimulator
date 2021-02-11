@@ -6,6 +6,7 @@ package View;
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,13 +20,13 @@ public class InputFileReader {
 	
 	
 	//parses Input file into an a
-	public void readInFile(File file) 
+	public ArrayList<Object> readInFile(File file) throws FileNotFoundException 
 	{ 
 		
-		File file = new File("./InputFile.txt");
+		//File file = new File("./InputFile.txt");
 		Scanner scan = new Scanner(file);
 
-		ArrayList<Object> schedule = new ArrayList<Object>();
+		ArrayList<Object> information = new ArrayList<Object>();
 
 		while (scan.hasNextLine()) {
 			
@@ -37,18 +38,41 @@ public class InputFileReader {
 				if (fileInfo.length == 4) {
 
 					//Time
-					info.add(fileInfo[0]);
+					String time = fileInfo[0];
+					String[] timeValues = time.split(":");
+					if(timeValues.length == 4) {
+						int hours = Integer.parseInt(timeValues[0]);
+						int minutes = Integer.parseInt(timeValues[1]);
+						int seconds = Integer.parseInt(timeValues[2]);
+						
+						int timeInSeconds = (hours*60*60) +(minutes*60) +seconds;
+						info.add(timeInSeconds);
+						
+					}else {
+						System.out.println("Incorrect input for time");
+					}
+					
 					
 					//Original Floor Number
-					info.add(fileInfo[1]);
+					int intialFloorNumber = Integer.parseInt(fileInfo[1]);
+					info.add(intialFloorNumber);
 					
 					//Direction
-					info.add(fileInfo[2]);
+					String value = fileInfo[2];
+					boolean direction;
+					
+					if(value=="Up") {
+						direction=true;
+					}else {
+						direction = false;
+					}
+					info.add(direction);
 					
 					//Destination Floor
-					info.add(fileInfo[3]);
+					int destinationFloorNumber = Integer.parseInt(fileInfo[3]);
+					info.add(destinationFloorNumber);
 
-					schedule.add(info);
+					information.add(info);
 
 				} else {
 					System.out.print("Correct inputs not receieved. \n");
@@ -57,8 +81,9 @@ public class InputFileReader {
 		
 		}
 		scan.close();
-		
+		return information;
 	}
+	
 }
 
 
