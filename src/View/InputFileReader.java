@@ -5,56 +5,60 @@ package View;
  * input file at the apropreate time.
  */
 
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 /**
- * @author madelynkrasnay
+ * @author madelynkrasnay danish1371
  *
  */
 public class InputFileReader {
-<<<<<<< HEAD
 	
 	
 	//parses Input file into an a
 	public void readInFile(File file) 
 	{ 
 		
-		DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+		File file = new File("./InputFile.txt");
+		Scanner scan = new Scanner(file);
+
+		ArrayList<Object> schedule = new ArrayList<Object>();
+
+		while (scan.hasNextLine()) {
+			
+			ArrayList<Object> info = new ArrayList<>();
+
+			String line = scan.nextLine();
+			String[] fileInfo = line.split(" ");
 		
-		Scanner sc = null;
-		try {
-			sc = new Scanner(file);
-			while (sc.hasNextLine()) {
-			       String [] line = (sc.nextLine().split(" "));
-			       
-			       String[] timeString = line[0].split(":");
-			       //long instrTime = Integer.parseInt(timeString[1]) + 
-			    	//	   Integer.parseInt(timeString[2])*60 + 
-			    	//	   Integer.parseInt(timeString[0])*60*60;
-			       
-			       int originFloor = Integer.parseInt(line[1]);
-			       
-			       if (line[2]=="up") {
-			    	   boolean direction = true;
-			       }
-			       else if (line[2]=="down") {
-			    	   boolean direction = false;
-			       }
-			       else{
-			    	   //break nicely
-			       }
-			       
-			       int destinationFloor = Integer.parseInt(line[3]);
-			       
-			       //put instrtime, origin floor, direction, and destination as 
-			       //an instruction into some kind of queue
-			       
-			  } 
-		} catch (FileNotFoundException e) {
-		} 
-		  
-	} 
+				if (fileInfo.length == 4) {
+
+					//Time
+					info.add(fileInfo[0]);
+					
+					//Original Floor Number
+					info.add(fileInfo[1]);
+					
+					//Direction
+					info.add(fileInfo[2]);
+					
+					//Destination Floor
+					info.add(fileInfo[3]);
+
+					schedule.add(info);
+
+				} else {
+					System.out.print("Correct inputs not receieved. \n");
+					
+				}
+		
+		}
+		scan.close();
+		
+	}
 }
 
-=======
->>>>>>> bdc4f42b6d1d0809d5d094f363be4ed7b64b4a97
 
-}
