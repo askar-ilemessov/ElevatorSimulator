@@ -20,7 +20,8 @@ public class InputFileReader {
 	
 	
 	//parses Input file into an a
-	public ArrayList<Object> readInFile(File file) throws FileNotFoundException { 
+	public ArrayList<Object> readInFile(File file) throws FileNotFoundException 
+	{ 
 		
 		//File file = new File("./InputFile.txt");
 		Scanner scan = new Scanner(file);
@@ -33,13 +34,13 @@ public class InputFileReader {
 
 			String line = scan.nextLine();
 			String[] fileInfo = line.split(" ");
-			
+		
 				if (fileInfo.length == 4) {
 
 					//Time
 					String time = fileInfo[0];
 					String[] timeValues = time.split(":");
-					if(timeValues.length == 3) {
+					if(timeValues.length == 4) {
 						int hours = Integer.parseInt(timeValues[0]);
 						int minutes = Integer.parseInt(timeValues[1]);
 						int seconds = Integer.parseInt(timeValues[2]);
@@ -60,7 +61,7 @@ public class InputFileReader {
 					String value = fileInfo[2];
 					boolean direction;
 					
-					if(value.equals("Up")) {
+					if(value=="Up") {
 						direction=true;
 					}else {
 						direction = false;
