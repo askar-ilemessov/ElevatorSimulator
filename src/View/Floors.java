@@ -26,37 +26,22 @@ public class Floors extends Thread {
 	private int elevatorFloorIndicator;
 	
 	private Scheduler scheduler;
+	private ArrayList<SimulatedArrival> arrivals;
+	
+	//Collection of people waiting for elevators to arrive
+	//this is checked when an elevator arrives to see where the people waiting want to go
+	//the index of the first array represents the floor (index 0 -> first floor)
+	//the second array is to allow multiple people to wait on the same floor
+	//the integers stored in the second array represent destinations those waiting at that floor
+	//those integers do not need to be unique even though elevators only need to respond to unique values in those arrays
+	//as this allows us to track the number of people boarding the elevator later when we consider elevator capacity.
+	private ArrayList<Integer> [] waiting; 
 	
 	
 	
-	private int time=0;
-	private int originFloor=0;
-	private boolean direction;
-	private int destinationFloor;
-	
-	public void readData(ArrayList<Object> list) {
-		
-		
-		for (int i = 0; i < list.size(); i++) { 
-            for (int j = 0; j < ((ArrayList<Object>) list.get(i)).size(); j++) {
-            	time = (int) ((ArrayList<Object>) list.get(i)).get(0);
-            	originFloor = (int) ((ArrayList<Object>) list.get(i)).get(1);
-            	elevatorDirectionIndicator = (boolean) ((ArrayList<Object>) list.get(i)).get(2);
-            	destinationFloor = (int) ((ArrayList<Object>) list.get(i)).get(3);
-                //System.out.print(list.get(i).get(j) + " "); 
-            } 
-            System.out.println(); 
-        }
-	}
-	
-	
-	
-	
-	
-	
-	
-	public Floors(int numberOfFloors) {
+	public Floors(int numberOfFloors, ArrayList<SimulatedArrival> arrivals) {
 		lamps = new boolean [numberOfFloors] [2];
+		this.arrivals = arrivals;
 	}
 	
 	public void setScheduler(Scheduler scheduler) {
@@ -118,6 +103,15 @@ public class Floors extends Thread {
 				+ " going " + direction);
 		setLamp(floor, direction, false);
 		
+		//call elevator button press in scheduler for each of those waiting 
+		//on this floor and going the appropriate direction
+		for (int destination : waiting[floor]) {
+			if((destination > floor && direction==true)||
+					(destination < floor && direction==false)) {
+				scheduler.elevatorButtonPressed(destination);
+				//remove from waiting
+			}
+		}
 	}
 	
 	public void elevatorLocationUpdated(int floor) {
@@ -136,7 +130,22 @@ public class Floors extends Thread {
 	//should notify arrivals as they appear in the floor input file
 	public void run() {
 		try {
-			sleep(500);
+			sleep(50);//sleep long enough for all threads to set up and initialize (should be done cleaner)
+			//capture the time
+			Long startTime = System.currentTimeMillis();
+			System.out.println("Simulation starting...");
+			
+			for(SimulatedArrival arrival : arrivals) {
+					//sleep until the next arrival is scheduled
+	            	sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
+	            	
+	            	//simulate someone at the specified floor pressing the button in the appropriate direction
+	            	buttonPress(arrival.getOriginFloor(), arrival.isDirection());
+	            	
+	            	//add person to collection of waiting people
+	            	waiting[arrival.getOriginFloor()].add(arrival.getDestinationFloor());
+	            	
+			}
 		} catch (InterruptedException e) {
 			
 		}

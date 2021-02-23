@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import View.Elevator;
 import View.Floors;
 import View.InputFileReader;
+import View.SimulatedArrival;
 
 /**
  * 
@@ -25,37 +26,34 @@ class Main {
 	public static void main(String[] args) {
 
 		int numberOfFloors = 7;
-
-		Elevator elevator1 = new Elevator(numberOfFloors);
-		Thread elevator1Thread = new Thread(elevator1, "Elevator 1");
+		
 
 		// floor numbers in order the elevator is to visit them
 		// make an array of queues for multiple elevators, one for each elevator
 		Queue<Integer> schedule = new LinkedList<>();
-
-		Floors floors = new Floors(numberOfFloors);
-		Thread floorsThread = new Thread(floors, "Floors");
-
-		Scheduler scheduler = new Scheduler(elevator1, floors, schedule);
-		Thread schedulerThread = new Thread(scheduler, "Scheduler");
-
 		
-		//Changes
+		
+		//take in the file of arrivals to be simulated and store them to be 
+		//initlized in floors
 		InputFileReader ifr = new InputFileReader();
-
 		File file = new File("src/Model/InputFile.txt");
-		ArrayList<Object> list = new ArrayList<>();
+		ArrayList<SimulatedArrival> list = new ArrayList<SimulatedArrival>();
 		try {
 			list = ifr.readInFile(file);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		floors.readData(list);
-		scheduler.readData(list);
-		elevator1.readData(list);
-		//	end of changes
 		
+		//inittlize and start threads
+		Elevator elevator1 = new Elevator(numberOfFloors);
+		Thread elevator1Thread = new Thread(elevator1, "Elevator 1");
+
+		Floors floors = new Floors(numberOfFloors, list);
+		Thread floorsThread = new Thread(floors, "Floors");
+
+		Scheduler scheduler = new Scheduler(elevator1, floors, schedule);
+		Thread schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		elevator1Thread.start();
 		floorsThread.start();

@@ -29,34 +29,6 @@ public class Scheduler extends Thread {
 		this.schedule = schedule;
 	}
 	
-	private int time=0;
-	private int originFloor=0;
-	private boolean direction;
-	private int destinationFloor;
-	
-	public void readData(ArrayList<Object> list) {
-		
-		
-		for (int i = 0; i < list.size(); i++) { 
-            for (int j = 0; j < ((ArrayList<Object>) list.get(i)).size(); j++) {
-            	time = (int) ((ArrayList<Object>) list.get(i)).get(0);
-            	originFloor = (int) ((ArrayList<Object>) list.get(i)).get(1);
-            	direction = (boolean) ((ArrayList<Object>) list.get(i)).get(2);
-            	destinationFloor = (int) ((ArrayList<Object>) list.get(i)).get(3);
-                //System.out.print(list.get(i).get(j) + " "); 
-            } 
-            System.out.println(); 
-        }
-	}
-	
-	
-	
-	
-	
-	
-	
-	//notify elevator of schedule change
-	
 	//Event Handeling_________________________________________________
 	//Performs nessacary tasks in response to events
 	

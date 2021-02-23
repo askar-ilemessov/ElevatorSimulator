@@ -1,8 +1,8 @@
 package View;
 /**
- * Calls appropreate event handeling methoids in 
+ * Calls appropriate event handling methods in 
  * elevator and floors to reflect each the entry in the 
- * input file at the apropreate time.
+ * input file at the appropriate time.
  */
 
 import java.io.File;
@@ -13,24 +13,20 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * @author madelynkrasnay danish1371
+ * @author madelynkrasnay, danish1371
  *
  */
 public class InputFileReader {
-	
-	
+
 	//parses Input file into an a
-	public ArrayList<Object> readInFile(File file) throws FileNotFoundException 
+	public ArrayList<SimulatedArrival> readInFile(File file) throws FileNotFoundException 
 	{ 
 		
-		//File file = new File("./InputFile.txt");
 		Scanner scan = new Scanner(file);
 
-		ArrayList<Object> information = new ArrayList<Object>();
+		ArrayList<SimulatedArrival> arrivals = new ArrayList<SimulatedArrival>();
 
 		while (scan.hasNextLine()) {
-			
-			ArrayList<Object> info = new ArrayList<>();
 
 			String line = scan.nextLine();
 			String[] fileInfo = line.split(" ");
@@ -40,13 +36,14 @@ public class InputFileReader {
 					//Time
 					String time = fileInfo[0];
 					String[] timeValues = time.split(":");
+					long timeInMilliseconds = -1;//this way if it fails to intitilize it doesn't try to run with it...
+					//TODO: handle this more gracefully
 					if(timeValues.length == 3) {
 						int hours = Integer.parseInt(timeValues[0]);
 						int minutes = Integer.parseInt(timeValues[1]);
 						int seconds = Integer.parseInt(timeValues[2]);
 						
-						int timeInSeconds = (hours*60*60) +(minutes*60) +seconds;
-						info.add(timeInSeconds);
+						timeInMilliseconds = ((hours*60*60) +(minutes*60) +seconds)*100;
 						
 					}else {
 						System.out.println("Incorrect input for time");
@@ -55,7 +52,6 @@ public class InputFileReader {
 					
 					//Original Floor Number
 					int intialFloorNumber = Integer.parseInt(fileInfo[1]);
-					info.add(intialFloorNumber);
 					
 					//Direction
 					String value = fileInfo[2];
@@ -66,13 +62,13 @@ public class InputFileReader {
 					}else {
 						direction = false;
 					}
-					info.add(direction);
 					
 					//Destination Floor
 					int destinationFloorNumber = Integer.parseInt(fileInfo[3]);
-					info.add(destinationFloorNumber);
-
-					information.add(info);
+					
+					//create a simulated arrival object and add it to my ArrayList of arrivals
+					SimulatedArrival arrival = new SimulatedArrival(timeInMilliseconds, intialFloorNumber, direction, destinationFloorNumber);
+					arrivals.add(arrival);
 
 				} else {
 					System.out.print("Correct inputs not receieved. \n");
@@ -81,7 +77,7 @@ public class InputFileReader {
 		
 		}
 		scan.close();
-		return information;
+		return arrivals;
 	}
 	
 }
