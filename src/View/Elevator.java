@@ -7,7 +7,7 @@ import Controller.Scheduler;
  * @author madelynkrasnay
  *
  */
-public class Elevator extends Thread {
+public class Elevator implements Runnable {
 	
 	private Scheduler scheduler;
 	
@@ -119,8 +119,8 @@ public class Elevator extends Thread {
 		//open doors
 		//wait to load
 		try {
-			sleep(5000);
 			System.out.println("Loading elevator car...\n");
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -161,7 +161,7 @@ public class Elevator extends Thread {
 				setDirection(true);
 				setMotor(1);//move this into setter once wont cause a merge conflict with tests
 				try {
-					sleep(500);//however long we decide it take for an elevator to climb a floor
+					Thread.sleep(500);//however long we decide it take for an elevator to climb a floor
 				} catch (InterruptedException e) {
 				}
 				locationUpdate(currentFloor + 1);
@@ -172,7 +172,7 @@ public class Elevator extends Thread {
 				setDirection(false);
 				setMotor(2);
 				try {
-					sleep(500);//however long we decide it take for an elevator to descend a floor
+					Thread.sleep(500);//however long we decide it take for an elevator to descend a floor
 				} catch (InterruptedException e) {
 				}
 				locationUpdate(currentFloor - 1);
@@ -184,7 +184,7 @@ public class Elevator extends Thread {
 	public void run() {
 		//give the Scheduler a second to set the scheduler
 		try {
-			sleep(500);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 		}
 		while(true) {

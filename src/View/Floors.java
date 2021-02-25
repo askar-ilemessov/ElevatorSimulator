@@ -15,7 +15,7 @@ import Controller.Scheduler;
  * @author madelynkrasnay
  *
  */
-public class Floors extends Thread {
+public class Floors implements Runnable {
 	
 	
 	//local state variables to reflect our outputs:
@@ -139,14 +139,14 @@ public class Floors extends Thread {
 	//should notify arrivals as they appear in the floor input file
 	public void run() {
 		try {
-			sleep(50);//sleep long enough for all threads to set up and initialize (should be done cleaner)
+			Thread.sleep(50);//sleep long enough for all threads to set up and initialize (should be done cleaner)
 			//capture the time
 			Long startTime = System.currentTimeMillis();
 			System.out.println("Simulation starting...");
 			
 			for(SimulatedArrival arrival : arrivals) {
 					//sleep until the next arrival is scheduled
-	            	sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
+	            	Thread.sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
 	            	
 	            	//simulate someone at the specified floor pressing the button in the appropriate direction
 	            	buttonPress(arrival.getOriginFloor(), arrival.isDirection());
