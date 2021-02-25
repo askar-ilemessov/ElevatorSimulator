@@ -39,8 +39,7 @@ public class Scheduler extends Thread {
 		synchronized(this.schedule){
 			schedule.add(originFloor);//for now just tagging it to the end of the schedule
 			//this should look at the queue(s) and place it in an optimal location
-			//notify elevator
-			//notify floors the elevator is on its way
+			schedule.notifyAll();
 		}
 	}
 	

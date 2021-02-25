@@ -12,7 +12,7 @@ public class Elevator extends Thread {
 	
 	private Scheduler scheduler;
 	
-	//elevator state varibles
+	//elevator state variables
 	//lamps (true = on) (index = floor)
 	private boolean [] lamps;
 	//motor (0=stopped, 1=moving up, 2=moving down)
@@ -29,7 +29,7 @@ public class Elevator extends Thread {
 	
 	public Elevator(int numberOfFloors) {
 		lamps = new boolean[numberOfFloors];
-		motor = 0; //sttionary
+		motor = 0; //Stationary
 		door = false; //door closed
 	}
 	
@@ -52,6 +52,7 @@ public class Elevator extends Thread {
 	//(0=stoped, 1=moving up, 2=moving down)
 	private void setMotor(int state) {
 		motor = state;
+		//System.out.println("Elevator motor is in state " + state);
 		
 	}
 	
@@ -68,7 +69,7 @@ public class Elevator extends Thread {
 	
 	private void setCurrentFloor(int floor) {
 		currentFloor = floor;
-		
+		System.out.println("Elevator is now at floor "+ floor);
 	}
 	
 	
@@ -79,33 +80,34 @@ public class Elevator extends Thread {
 	//true = up
 	private void setDirection(boolean direction) {
 		currentDirection = direction;
+		System.out.println("Elevator is going "+ (direction? "up": "down"));
 	}
 	
 	private void setDesination(int floor) {
 		destination = floor;
+		System.out.println("Elevator has the new destination of floor " + destination);
 	}
 	
 	//Event Handeling_________________________________________________
-	//proforms nessacary tasks in responce to events
+	//Performs nessacary tasks in response to events
 	
 	//stop requested
-	//updates sceduler of an interternal floor button was pressed
+	//updates scheduler of an interternal floor button was pressed
 	//call in floors according to input file
 	public void buttonPress(int destinationFloor) {
 		
 	}
 	
-	//called perodically when in motion
-	//floor change as a resault of regular motion (
+	//called periodically when in motion
+	//floor change as a result of regular motion (
 	//location = floor number)
 	public void locationUpdate(int location) {
 		setCurrentFloor(location);
-		System.out.println("Elevator now at floor "+ location);
 		//update scheduler
 		
 	}
 	
-	//stoped at a floor 
+	//stopped at a floor 
 	//opens the doors, lets people load and closes them again
 	//(location = floor number)
 	public void stopped(int location) {
@@ -116,28 +118,29 @@ public class Elevator extends Thread {
 		
 		//open doors
 		//wait to load
-		//close doors
+		try {
+			sleep(5000);
+			System.out.println("Loading elevator car...\n");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	//resuming motion
-	//calls direction update if nessacary
-	//direction true=up
-	private void resumingMotion(boolean direction) {
-		System.out.println("Elevator resuming motion");
-		
-	}
-	
 	
 	//_________________________________________________________________
 	
 	private void scheduleNewDestination() {
 		//set Destination to the top of the queue and pop
-		this.destination = schedule.remove();
+		synchronized(schedule){
+			if(!schedule.isEmpty()) {
+				setDesination(schedule.remove());
+			}
+			schedule.notifyAll();
+		}
 	}
 	
-	//request new destination from sechduler
+	//request new destination from scheduler
 	//will be updated when there is new work on the queue
-	//kinda redundant as the  but nessacary as per assignment doc
 	private void requestWork() {
 		scheduler.elevatorRequestsWork();
 		System.out.println("Elevator is on standby");
@@ -153,8 +156,8 @@ public class Elevator extends Thread {
 				try {
 					sleep(500);//however long we decide it take for an elevator to climb a floor
 				} catch (InterruptedException e) {
-				}//however long we decide it take for an elevator to climb a floor
-				setCurrentFloor(currentFloor++);
+				}
+				locationUpdate(currentFloor + 1);
 				
 			}
 			else if(currentFloor > destination){
@@ -162,12 +165,11 @@ public class Elevator extends Thread {
 				setDirection(false);
 				setMotor(2);
 				try {
-					sleep(500);//however long we decide it take for an elevator to decend a floor
+					sleep(500);//however long we decide it take for an elevator to descend a floor
 				} catch (InterruptedException e) {
 				}
-				setCurrentFloor(currentFloor--);
+				locationUpdate(currentFloor - 1);
 			}
-			System.out.println("Elevator is now at floor "+ destination);
 		}
 	}
 	
@@ -180,34 +182,26 @@ public class Elevator extends Thread {
 		}
 		while(true) {
 				if(destination == null){
-					//tell the seheduler
+					//tell the scheduler
 					requestWork();
-					//wait() on schedule object
-					synchronized(this.schedule){
-						while(this.schedule.peek() == null) {
-							try{
-								this.schedule.wait();
-							}
-							catch(Exception e){	
-							}
-						}
+					//and get a destination
+					while(destination == null){
 						scheduleNewDestination();
-						this.schedule.notifyAll();
 					}
 				}
 				else {
-					//go to destination
+					//if you are at your destination
 					//get new destination
 					if(currentFloor == destination) {
 						//stop
-						this.destination = null;
 						this.stopped(currentFloor);
-						this.scheduleNewDestination();
+						while(currentFloor == destination) {
+							this.scheduleNewDestination();
+						}
 					}
-					else {
-						 //go up
-						travelToDestination();
-					}
+					//go to destination
+					travelToDestination();
+					
 				}
 		}
 	}

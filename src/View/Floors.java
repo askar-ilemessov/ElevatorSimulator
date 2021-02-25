@@ -35,13 +35,20 @@ public class Floors extends Thread {
 	//the integers stored in the second array represent destinations those waiting at that floor
 	//those integers do not need to be unique even though elevators only need to respond to unique values in those arrays
 	//as this allows us to track the number of people boarding the elevator later when we consider elevator capacity.
-	private ArrayList<Integer> [] waiting; 
+	private ArrayList<Integer>[] waiting; 
 	
-	
+	public Floors(int numberOfFloors) {
+		lamps = new boolean [numberOfFloors] [2];
+		this.arrivals = new ArrayList<SimulatedArrival>();
+	}
 	
 	public Floors(int numberOfFloors, ArrayList<SimulatedArrival> arrivals) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = arrivals;
+		this.waiting= new ArrayList[numberOfFloors];
+		for(int i=0; i<numberOfFloors; i++) {
+			this.waiting[i] = new ArrayList<Integer>();
+		}
 	}
 	
 	public void setScheduler(Scheduler scheduler) {
@@ -56,8 +63,8 @@ public class Floors extends Thread {
 	private void setLamp(int floor, boolean direction, boolean state) {
 		lamps[floor][(direction? 1 : 0)] = state;
 		System.out.println("The lamp on floor "+ floor 
-				+ " for the direction " + state
-				+ " is now" + state);
+				+ " for the direction " + (direction? "up": "down")
+				+ " is now " + (state? "on": "off"));
 	}
 	
 	public boolean getLampValue(int floor, boolean direction) {
@@ -66,7 +73,8 @@ public class Floors extends Thread {
 	
 	private void setElevatorFloorIndicator(int floor) {
 		elevatorFloorIndicator = floor;
-		System.out.println("Floors' elevator location indicator now reads " + elevatorFloorIndicator);
+		System.out.println("Floors' elevator location indicator now reads " + 
+		elevatorFloorIndicator);
 	}
 	
 	
@@ -76,7 +84,8 @@ public class Floors extends Thread {
 	
 	private void setElevatorDirectionIndicator(boolean direction) {
 		elevatorDirectionIndicator = direction;
-		System.out.println("Floors' direction location indicator now reads " + elevatorDirectionIndicator);
+		System.out.println("Floors' direction location indicator now reads " + 
+		(elevatorDirectionIndicator? "up": "down"));
 	}
 	
 	public boolean getElevatorDirectionIndicator() {
@@ -91,21 +100,21 @@ public class Floors extends Thread {
 	//(true = up, false = down)
 	//floor = floor number the button is on
 	private void buttonPress( int floor, boolean direction) {
-		scheduler.FloorButtonPress(floor, direction);
 		System.out.println("Floor " + floor 
-				+ " requested an elevator going " + direction);
-		
+				+ " requested an elevator going " + (direction? "up": "down"));
+		setLamp(floor, direction, true);
+		scheduler.FloorButtonPress(floor, direction);
 	}
 	
 	//elevator arrived
 	public void elevatorArrived( int floor, boolean direction) {
 		System.out.println("An elevator arrived at " + floor 
-				+ " going " + direction);
+				+ " going " + (direction? "up": "down"));
 		setLamp(floor, direction, false);
 		
 		//call elevator button press in scheduler for each of those waiting 
 		//on this floor and going the appropriate direction
-		for (int destination : waiting[floor]) {
+		for (int destination : waiting[floor-1]) {
 			if((destination > floor && direction==true)||
 					(destination < floor && direction==false)) {
 				scheduler.elevatorButtonPressed(destination);
@@ -143,13 +152,10 @@ public class Floors extends Thread {
 	            	buttonPress(arrival.getOriginFloor(), arrival.isDirection());
 	            	
 	            	//add person to collection of waiting people
-	            	waiting[arrival.getOriginFloor()].add(arrival.getDestinationFloor());
+	            	waiting[arrival.getOriginFloor()-1].add(arrival.getDestinationFloor());
 	            	
 			}
 		} catch (InterruptedException e) {
-			
-		}
-		while(true) {
 			
 		}
 	}
