@@ -7,7 +7,6 @@ package Controller;
  */
 
 import java.util.Queue;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import View.Elevator;
@@ -49,10 +48,12 @@ public class Scheduler extends Thread {
 	
 	//elevator stop request from elevator
 	public void elevatorButtonPressed(int floor) {
-		///update schedule
-		schedule.add(floor);
-		//notify elevator
-		//schedule.NotifyAll();
+		synchronized(this.schedule){
+			///update schedule
+			schedule.add(floor);
+			//notify elevator
+			schedule.notifyAll();
+		}
 	}
 	
 	//State updates from elevator:
@@ -88,7 +89,6 @@ public class Scheduler extends Thread {
 	public void run() {
 		//give floors and elevator a reference to you
 		elevator.setScheduler(this);
-		elevator.setSchedule(this.schedule);
 		floors.setScheduler(this);
 		while(true) {
 			

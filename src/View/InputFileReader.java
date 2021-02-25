@@ -7,8 +7,6 @@ package View;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -43,7 +41,7 @@ public class InputFileReader {
 						int minutes = Integer.parseInt(timeValues[1]);
 						int seconds = Integer.parseInt(timeValues[2]);
 						
-						timeInMilliseconds = ((hours*60*60) +(minutes*60) +seconds)*100;
+						timeInMilliseconds = ((hours*3600) +(minutes*60) +seconds)*1000;
 						
 					}else {
 						System.out.println("Incorrect input for time");

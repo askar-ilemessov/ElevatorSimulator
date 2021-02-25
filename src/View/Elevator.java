@@ -1,6 +1,5 @@
 package View;
 
-import java.util.ArrayList;
 import java.util.Queue;
 import Controller.Scheduler;
 
@@ -27,10 +26,11 @@ public class Elevator extends Thread {
 	private Integer destination = null;
 	
 	
-	public Elevator(int numberOfFloors) {
+	public Elevator(int numberOfFloors, Queue<Integer> schedule) {
 		lamps = new boolean[numberOfFloors];
 		motor = 0; //Stationary
 		door = false; //door closed
+		this.schedule = schedule;
 	}
 	
 	public void setSchedule(Queue<Integer>  schedule) {
@@ -134,8 +134,15 @@ public class Elevator extends Thread {
 		synchronized(schedule){
 			if(!schedule.isEmpty()) {
 				setDesination(schedule.remove());
+			} else {
+				System.out.println("empty schedule");
+				try {
+					schedule.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			schedule.notifyAll();
 		}
 	}
 	
@@ -189,20 +196,17 @@ public class Elevator extends Thread {
 						scheduleNewDestination();
 					}
 				}
-				else {
+				else if(currentFloor == destination) {
 					//if you are at your destination
 					//get new destination
-					if(currentFloor == destination) {
 						//stop
-						this.stopped(currentFloor);
-						while(currentFloor == destination) {
-							this.scheduleNewDestination();
-						}
+					this.stopped(currentFloor);
+					while(currentFloor == destination) {
+						this.scheduleNewDestination();
 					}
-					//go to destination
-					travelToDestination();
-					
 				}
+				//go to destination
+				travelToDestination();
 		}
 	}
 }

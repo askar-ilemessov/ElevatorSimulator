@@ -34,7 +34,7 @@ class Main {
 		
 		
 		//take in the file of arrivals to be simulated and store them to be 
-		//initlized in floors
+		//initialized in floors
 		InputFileReader ifr = new InputFileReader();
 		File file = new File("src/Model/InputFile.txt");
 		ArrayList<SimulatedArrival> list = new ArrayList<SimulatedArrival>();
@@ -45,8 +45,8 @@ class Main {
 			e.printStackTrace();
 		}
 		
-		//inittlize and start threads
-		Elevator elevator1 = new Elevator(numberOfFloors);
+		//initialize and start threads
+		Elevator elevator1 = new Elevator(numberOfFloors, schedule);
 		Thread elevator1Thread = new Thread(elevator1, "Elevator 1");
 
 		Floors floors = new Floors(numberOfFloors, list);

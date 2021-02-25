@@ -118,7 +118,7 @@ public class Floors extends Thread {
 			if((destination > floor && direction==true)||
 					(destination < floor && direction==false)) {
 				scheduler.elevatorButtonPressed(destination);
-				//remove from waiting
+				//waiting[floor-1].remove(destination);
 			}
 		}
 	}

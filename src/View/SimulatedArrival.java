@@ -42,4 +42,10 @@ public class SimulatedArrival {
 		return destinationFloor;
 	}
 
+	@Override
+	public String toString() {
+		return "SimulatedArrival [time=" + time + ", originFloor=" + originFloor + ", direction=" + direction
+				+ ", destinationFloor=" + destinationFloor + "]";
+	}
+
 }
