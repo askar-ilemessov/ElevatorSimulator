@@ -49,8 +49,9 @@ public class Elevator implements Runnable {
 		lamps[floor]=state;
 	}
 	
+	
 	//(0=stoped, 1=moving up, 2=moving down)
-	private void setMotor(int state) {
+	public void setMotor(int state) {
 		motor = state;
 		//System.out.println("Elevator motor is in state " + state);
 		
@@ -67,7 +68,7 @@ public class Elevator implements Runnable {
 		
 	}
 	
-	private void setCurrentFloor(int floor) {
+	public void setCurrentFloor(int floor) {
 		currentFloor = floor;
 		System.out.println("Elevator is now at floor "+ floor);
 	}
@@ -78,14 +79,22 @@ public class Elevator implements Runnable {
 	}
 	
 	//true = up
-	private void setDirection(boolean direction) {
+	public void setDirection(boolean direction) {
 		currentDirection = direction;
 		System.out.println("Elevator is going "+ (direction? "up": "down"));
 	}
 	
-	private void setDesination(int floor) {
+	public boolean getDirection() {
+		return currentDirection;
+	}
+	
+	public void setDesination(int floor) {
 		destination = floor;
 		System.out.println("Elevator has the new destination of floor " + destination);
+	}
+	
+	public int getDesination() {
+		return destination;
 	}
 	
 	//Event Handeling_________________________________________________

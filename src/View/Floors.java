@@ -60,7 +60,7 @@ public class Floors implements Runnable {
 	//floor is index in lamps array
 	//direction true = going up, false = going down
 	//state true=on
-	private void setLamp(int floor, boolean direction, boolean state) {
+	public void setLamp(int floor, boolean direction, boolean state) {
 		lamps[floor][(direction? 1 : 0)] = state;
 		System.out.println("The lamp on floor "+ floor 
 				+ " for the direction " + (direction? "up": "down")
@@ -71,7 +71,7 @@ public class Floors implements Runnable {
 		return lamps[floor][(direction? 1 : 0)];
 	}
 	
-	private void setElevatorFloorIndicator(int floor) {
+	public void setElevatorFloorIndicator(int floor) {
 		elevatorFloorIndicator = floor;
 		System.out.println("Floors' elevator location indicator now reads " + 
 		elevatorFloorIndicator);
@@ -82,7 +82,7 @@ public class Floors implements Runnable {
 		return elevatorFloorIndicator;
 	}
 	
-	private void setElevatorDirectionIndicator(boolean direction) {
+	public void setElevatorDirectionIndicator(boolean direction) {
 		elevatorDirectionIndicator = direction;
 		System.out.println("Floors' direction location indicator now reads " + 
 		(elevatorDirectionIndicator? "up": "down"));
@@ -99,7 +99,7 @@ public class Floors implements Runnable {
 	//a request for an elevator to visit this floor
 	//(true = up, false = down)
 	//floor = floor number the button is on
-	private void buttonPress( int floor, boolean direction) {
+	public void buttonPress( int floor, boolean direction) {
 		System.out.println("Floor " + floor 
 				+ " requested an elevator going " + (direction? "up": "down"));
 		setLamp(floor, direction, true);
