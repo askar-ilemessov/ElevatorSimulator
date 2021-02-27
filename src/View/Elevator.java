@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import Controller.Scheduler;
 
 /**
- * @author madelynkrasnay
+ * @author madelynkrasnay, Danish Butt
  *
  */
 public class Elevator implements Runnable {
@@ -49,8 +49,9 @@ public class Elevator implements Runnable {
 		lamps[floor]=state;
 	}
 	
+	
 	//(0=stoped, 1=moving up, 2=moving down)
-	private void setMotor(int state) {
+	public void setMotor(int state) {
 		motor = state;
 		if(state == 1) {
 			setDirection(true);
@@ -72,7 +73,7 @@ public class Elevator implements Runnable {
 		
 	}
 	
-	private void setCurrentFloor(int floor) {
+	public void setCurrentFloor(int floor) {
 		currentFloor = floor;
 		System.out.println("Elevator is now at floor "+ floor);
 	}
@@ -84,14 +85,22 @@ public class Elevator implements Runnable {
 	
 	//set by motor
 	//true = up
-	private void setDirection(boolean direction) {
+	public void setDirection(boolean direction) {
 		currentDirection = direction;
 		System.out.println("Elevator is going "+ (direction? "up": "down"));
 	}
 	
-	private void setDesination(int floor) {
+	public boolean getDirection() {
+		return currentDirection;
+	}
+	
+	public void setDesination(int floor) {
 		destination = floor;
 		System.out.println("Elevator has the new destination of floor " + destination);
+	}
+	
+	public int getDesination() {
+		return destination;
 	}
 	
 	//Event Handeling_________________________________________________
@@ -190,6 +199,8 @@ public class Elevator implements Runnable {
 		}
 	}
 	
+	
+	
 	//run()
 	public void run() {
 		//give the Scheduler a second to set the scheduler
@@ -198,25 +209,96 @@ public class Elevator implements Runnable {
 		} catch (InterruptedException e) {
 		}
 		while(true) {
-				if(destination == null){
-					//tell the scheduler
-					requestWork();
-					//and get a destination
-					while(destination == null){
-						scheduleNewDestination();
+			synchronized(schedule){
+				if(!schedule.isEmpty()) {
+					elevatorStateMachine(schedule.remove(), "WAITING");
+					//setDesination(schedule.remove());
+				} else {
+					//System.out.println("empty schedule");
+					try {
+						schedule.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
-				else if(currentFloor == destination) {
-					//if you are at your destination
-					//get new destination
-						//stop
-					this.stopped(currentFloor);
-					while(currentFloor == destination) {
-						this.scheduleNewDestination();
-					}
-				}
-				//go to destination
-				travelToDestination();
+			}
 		}
 	}
+	
+	
+	// This method is the state machine for the elevator subsystem
+	public void elevatorStateMachine(int floor, String state) {
+		
+	boolean destinationReached = false;
+
+	while (destinationReached == false) {
+		
+		//Initial State
+		if(state.equals("WAITING")) {
+		
+			setDesination(floor); //Handle floor request
+			
+			if (currentFloor == destination) {
+				state = "ARRVIVED";
+				
+			}else if (currentFloor != destination) {
+				state = "MOVING";
+			}
+
+		//Elevator moving state
+		}else if(state.equals("MOVING")) {
+			
+			if (currentFloor != destination) {
+				travelToDestination();
+			}else {
+				state ="ARRIVED";
+			}
+		
+		//Elevator arrived state	
+		}else if (state.equals("ARRIVED")) {
+			
+			if(currentFloor == destination) {
+				this.stopped(currentFloor);
+				destinationReached = true;
+				state = "WAITING";
+			}
+	
+			if(schedule.isEmpty()) {
+				System.out.println("All events in the schedule have been processed");
+			}
+		}
+	}
+		
+}
+	
+//	public void run() {
+//	//give the Scheduler a second to set the scheduler
+//	try {
+//		Thread.sleep(500);
+//	} catch (InterruptedException e) {
+//	}
+//	while(true) {
+//			if(destination == null){
+//				//tell the scheduler
+//				requestWork();
+//				//and get a destination
+//				while(destination == null){
+//					scheduleNewDestination();
+//				}
+//			}
+//			else if(currentFloor == destination) {
+//				//if you are at your destination
+//				//get new destination
+//					//stop
+//				this.stopped(currentFloor);
+//				while(currentFloor == destination) {
+//					this.scheduleNewDestination();
+//				}
+//			}
+//			//go to destination
+//			travelToDestination();
+//	}
+//}	
+
 }

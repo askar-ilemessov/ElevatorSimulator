@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * @author madelynkrasnay, danish1371
+ * @author madelynkrasnay, Danish Butt
  *
  */
 public class InputFileReader {
