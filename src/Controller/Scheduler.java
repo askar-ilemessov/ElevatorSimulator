@@ -6,8 +6,7 @@ package Controller;
  * each elevator would need their own scheduler.
  */
 
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import View.Elevator;
 import View.Floors;
@@ -20,40 +19,62 @@ public class Scheduler extends Thread {
 	
 	private Elevator elevator;
 	private Floors floors;
-	private Queue<Integer> schedule = new LinkedList<>();
+	private ArrayList<Integer> schedule = new ArrayList<>();
 	
-	public Scheduler(Elevator elevator, Floors floors, Queue<Integer>  schedule) {
+	public Scheduler(Elevator elevator, Floors floors, ArrayList<Integer>  schedule) {
 		this.elevator = elevator;
 		this.floors = floors;
 		this.schedule = schedule;
 	}
 	
+	private void addToSchedule(int floor, boolean direction) {
+		synchronized(this.schedule){
+			
+			if(schedule.size()==0||schedule.size()==1) {//case for where there is zero one location in the queue
+				schedule.add(floor);
+			}
+			else {//case for more than one location in the queue:
+				//go through collection and add at first index where the 
+				//the diffrence between the floors that would be on either 
+				//side of the potential stop location indicates travel in 
+				//the right direction
+				for(int i = 1; i < schedule.size(); i++) {
+					if((schedule.get(i-1)-schedule.get(i)) >=0 && direction) {
+						schedule.add(i+1,floor);
+						break;
+					}
+					else if(schedule.get(i-1)-schedule.get(i) <=0 && !direction) {
+						schedule.add(i,floor);
+						break;
+					}
+					else {//if the elevator never passes this floor going in the right direction, 
+						//just add it at the end of the queue
+						schedule.add(floor);
+					}
+				}
+			}
+			schedule.notifyAll();
+		}
+	}
+	
 	//Event Handeling_________________________________________________
 	//Performs nessacary tasks in response to events
+	//will be overhauled with the UDP update
 	
 	//elevator stop request from floor
 	//direction true = up
 	public void FloorButtonPress(int originFloor, boolean direction) {
 		//update schedule
-		synchronized(this.schedule){
-			schedule.add(originFloor);//for now just tagging it to the end of the schedule
-			//this should look at the queue(s) and place it in an optimal location
-			schedule.notifyAll();
-		}
+		this.addToSchedule(originFloor, direction);
 	}
 	
-	public Queue<Integer> getQueue() {
+	public ArrayList<Integer> getQueue() {
 		return schedule;
 	}
 	
 	//elevator stop request from elevator
-	public void elevatorButtonPressed(int floor) {
-		synchronized(this.schedule){
-			///update schedule
-			schedule.add(floor);
-			//notify elevator
-			schedule.notifyAll();
-		}
+	public void elevatorButtonPressed(int floor, boolean direction) {
+		this.addToSchedule(floor, direction);
 	}
 	
 	//State updates from elevator:
@@ -79,10 +100,8 @@ public class Scheduler extends Thread {
 	}
 	
 	public void elevatorRequestsWork() {
-		//do nothing for now
+		//do nothing for now, that might change with multi. elevators
 	}
-	
-	//resuming motion
 	
 	//_________________________________________________________________
 	
@@ -91,7 +110,6 @@ public class Scheduler extends Thread {
 		elevator.setScheduler(this);
 		floors.setScheduler(this);
 		while(true) {
-			
 		}
 	}
 

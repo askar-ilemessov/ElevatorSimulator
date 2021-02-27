@@ -1,10 +1,8 @@
 package Controller;
 
-import java.util.Queue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import View.Elevator;
 import View.Floors;
 import View.InputFileReader;
@@ -30,7 +28,7 @@ class Main {
 
 		// floor numbers in order the elevator is to visit them
 		// make an array of queues for multiple elevators, one for each elevator
-		Queue<Integer> schedule = new LinkedList<>();
+		ArrayList<Integer> schedule = new ArrayList<>();
 		
 		
 		//take in the file of arrivals to be simulated and store them to be 

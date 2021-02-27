@@ -1,6 +1,6 @@
 package View;
 
-import java.util.Queue;
+import java.util.ArrayList;
 import Controller.Scheduler;
 
 /**
@@ -22,18 +22,18 @@ public class Elevator implements Runnable {
 	private int currentFloor;
 	private boolean currentDirection;
 	
-	private Queue<Integer>  schedule;
+	private ArrayList<Integer>  schedule;
 	private Integer destination = null;
 	
 	
-	public Elevator(int numberOfFloors, Queue<Integer> schedule) {
+	public Elevator(int numberOfFloors, ArrayList<Integer> schedule) {
 		lamps = new boolean[numberOfFloors];
 		motor = 0; //Stationary
 		door = false; //door closed
 		this.schedule = schedule;
 	}
 	
-	public void setSchedule(Queue<Integer>  schedule) {
+	public void setSchedule(ArrayList<Integer>  schedule) {
 		this.schedule = schedule;
 	}
 	
@@ -52,7 +52,12 @@ public class Elevator implements Runnable {
 	//(0=stoped, 1=moving up, 2=moving down)
 	private void setMotor(int state) {
 		motor = state;
-		//System.out.println("Elevator motor is in state " + state);
+		if(state == 1) {
+			setDirection(true);
+		}
+		else if (state == 2) {
+			setDirection(false);
+		}
 		
 	}
 	
@@ -63,7 +68,7 @@ public class Elevator implements Runnable {
 	//(true=open)
 	private void setDoor(boolean state) {
 		door = state;
-		System.out.println("Elevator door state changed");
+		System.out.println("Elevator door is now "+ (state? "open": "closed"));
 		
 	}
 	
@@ -77,6 +82,7 @@ public class Elevator implements Runnable {
 		return currentFloor;
 	}
 	
+	//set by motor
 	//true = up
 	private void setDirection(boolean direction) {
 		currentDirection = direction;
@@ -95,6 +101,8 @@ public class Elevator implements Runnable {
 	//updates scheduler of an interternal floor button was pressed
 	//call in floors according to input file
 	public void buttonPress(int destinationFloor) {
+		setLamp(destinationFloor, true);
+		scheduler.elevatorButtonPressed(destinationFloor, currentDirection);
 		
 	}
 	
@@ -115,8 +123,10 @@ public class Elevator implements Runnable {
 		System.out.println("Elevator stopped at floor " + location);
 		//update scheduler
 		scheduler.elevatorStopped(location, currentDirection);
-		
+		//turn off lamp
+		setLamp(location, false);
 		//open doors
+		setDoor(true);
 		//wait to load
 		try {
 			System.out.println("Loading elevator car...\n");
@@ -125,6 +135,8 @@ public class Elevator implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//close doors
+		setDoor(false);
 	}
 	
 	//_________________________________________________________________
@@ -133,9 +145,9 @@ public class Elevator implements Runnable {
 		//set Destination to the top of the queue and pop
 		synchronized(schedule){
 			if(!schedule.isEmpty()) {
-				setDesination(schedule.remove());
+				setDesination(schedule.remove(0));
 			} else {
-				System.out.println("empty schedule");
+				requestWork();
 				try {
 					schedule.wait();
 				} catch (InterruptedException e) {
@@ -158,8 +170,7 @@ public class Elevator implements Runnable {
 		while(currentFloor != destination) {
 			if (currentFloor < destination){
 				 //go up a floor
-				setDirection(true);
-				setMotor(1);//move this into setter once wont cause a merge conflict with tests
+				setMotor(1);
 				try {
 					Thread.sleep(500);//however long we decide it take for an elevator to climb a floor
 				} catch (InterruptedException e) {
@@ -169,7 +180,6 @@ public class Elevator implements Runnable {
 			}
 			else if(currentFloor > destination){
 				//go down a floor
-				setDirection(false);
 				setMotor(2);
 				try {
 					Thread.sleep(500);//however long we decide it take for an elevator to descend a floor

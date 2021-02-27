@@ -114,12 +114,9 @@ public class Floors implements Runnable {
 		
 		//call elevator button press in scheduler for each of those waiting 
 		//on this floor and going the appropriate direction
-		for (int destination : waiting[floor-1]) {
-			if((destination > floor && direction==true)||
-					(destination < floor && direction==false)) {
-				scheduler.elevatorButtonPressed(destination);
-				//waiting[floor-1].remove(destination);
-			}
+		for (int i=0; i < waiting[floor-1].size(); i++) {
+				scheduler.elevatorButtonPressed(waiting[floor-1].get(i), direction);
+				waiting[floor-1].remove(i);
 		}
 	}
 	
