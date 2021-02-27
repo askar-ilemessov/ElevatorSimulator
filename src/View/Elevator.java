@@ -211,7 +211,7 @@ public class Elevator implements Runnable {
 		while(true) {
 			synchronized(schedule){
 				if(!schedule.isEmpty()) {
-					elevatorStateMachine(schedule.remove(), "WAITING");
+					elevatorStateMachine(schedule.remove(0), "WAITING");
 					//setDesination(schedule.remove());
 				} else {
 					//System.out.println("empty schedule");

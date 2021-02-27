@@ -4,6 +4,7 @@ package Controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -17,7 +18,7 @@ class SchedulerTest {
 	
 	private Elevator elevator;
 	private Floors floors;
-	private Queue <Integer> schedule = new LinkedList<>();
+	private ArrayList<Integer> schedule = new ArrayList<>();
 	private Scheduler scheduler;
 	
 	//Intialize values
@@ -47,7 +48,7 @@ class SchedulerTest {
 		public void testElevatorButtonPressed() {
 			
 			//In the elevator button is pressed to go to floor 3
-			scheduler.elevatorButtonPressed(3);
+			scheduler.elevatorButtonPressed(3, false);
 			
 			//Check that the schedule contains floor 3
 			assertTrue(schedule.contains(3));

@@ -4,15 +4,14 @@ package View;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
 class ElevatorTest {
 	
 	//Create Elevator object
-	private Queue <Integer> schedule = new LinkedList<>();
+	private ArrayList <Integer> schedule = new ArrayList<>();
 	private Elevator elevator = new Elevator(7, schedule);
 	
 	//This methods tests setMotor
