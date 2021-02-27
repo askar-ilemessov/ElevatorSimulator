@@ -203,74 +203,98 @@ public class Elevator implements Runnable {
 	
 	//run()
 	public void run() {
+	
 		//give the Scheduler a second to set the scheduler
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 		}
+		
+		String state = "WAITING";
 		while(true) {
-			synchronized(schedule){
-				if(!schedule.isEmpty()) {
-					elevatorStateMachine(schedule.remove(), "WAITING");
-					//setDesination(schedule.remove());
-				} else {
-					//System.out.println("empty schedule");
-					try {
-						schedule.wait();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-	
-	
-	// This method is the state machine for the elevator subsystem
-	public void elevatorStateMachine(int floor, String state) {
 		
-	boolean destinationReached = false;
-
-	while (destinationReached == false) {
-		
-		//Initial State
-		if(state.equals("WAITING")) {
-		
-			setDesination(floor); //Handle floor request
-			
-			if (currentFloor == destination) {
-				state = "ARRVIVED";
+			//Initial State
+			if(state.equals("WAITING")) {
+				System.out.println("got to waiting");
 				
-			}else if (currentFloor != destination) {
-				state = "MOVING";
-			}
+				
+				scheduleNewDestination();
+				
+				if (currentFloor == destination) {
+					state = "ARRVIVED";
+					
+				}else if (currentFloor != destination) {
+					state = "MOVING";
+				}
 
-		//Elevator moving state
-		}else if(state.equals("MOVING")) {
+			//Elevator moving state
+			}else if(state.equals("MOVING")) {
+				
+				System.out.println("GOT to moving");
+				if (currentFloor != destination) {
+					
+					travelToDestination();
+				}else {
+					state ="ARRIVED";
+				}
 			
-			if (currentFloor != destination) {
-				travelToDestination();
-			}else {
-				state ="ARRIVED";
-			}
-		
-		//Elevator arrived state	
-		}else if (state.equals("ARRIVED")) {
+			//Elevator arrived state	
+			}else if (state.equals("ARRIVED")) {
+				
 			
-			if(currentFloor == destination) {
 				this.stopped(currentFloor);
-				destinationReached = true;
+		
+		
+				
 				state = "WAITING";
 			}
-	
-			if(schedule.isEmpty()) {
-				System.out.println("All events in the schedule have been processed");
-			}
+		}
 		}
 	}
-		
-}
+	
+	
+//	// This method is the state machine for the elevator subsystem
+//	public void elevatorStateMachine(String state) {
+//		
+//		
+//		//Initial State
+//		if(state.equals("WAITING")) {
+//			
+//			while(destination == null) {
+//				scheduleNewDestination();
+//			}
+//			
+//			if (currentFloor == destination) {
+//				state = "ARRVIVED";
+//				
+//			}else if (currentFloor != destination) {
+//				state = "MOVING";
+//			}
+//
+//		//Elevator moving state
+//		}else if(state.equals("MOVING")) {
+//			
+//			System.out.println("GOT to moving");
+//			if (currentFloor != destination) {
+//				
+//				travelToDestination();
+//			}else {
+//				state ="ARRIVED";
+//			}
+//		
+//		//Elevator arrived state	
+//		}else if (state.equals("ARRIVED")) {
+//			
+//			if(currentFloor == destination) {
+//				this.stopped(currentFloor);
+//	
+//				state = "WAITING";
+//			}
+//	
+//		}
+//	}
+//		
+//}
 	
 //	public void run() {
 //	//give the Scheduler a second to set the scheduler
@@ -301,4 +325,4 @@ public class Elevator implements Runnable {
 //	}
 //}	
 
-}
+
