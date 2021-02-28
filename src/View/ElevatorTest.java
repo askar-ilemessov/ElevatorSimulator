@@ -66,8 +66,6 @@ class ElevatorTest {
 			assertEquals(5, elevator.getDesination());
 		}
 		
-		
-		
 	
 		//This method tests locationUpdate
 		@Test
@@ -78,13 +76,5 @@ class ElevatorTest {
 			assertEquals(3, elevator.getCurrentFloor());
 		}
 		
-		
-		
-		
-//	//This method tests stopped
-//		@Test
-//		public void testStopped() {
-//			elevator.stopped(2);
-//			assertEquals(0,elevator.getMotor());
-//		}
+	
 }

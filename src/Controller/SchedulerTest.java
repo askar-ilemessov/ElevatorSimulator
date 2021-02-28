@@ -1,6 +1,6 @@
 package Controller;
-//This class tests the methods in the scheduler class
-// @author Danish Butt
+//@author Danish Butt
+//This class tests the scheduler class
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -78,13 +78,5 @@ class SchedulerTest {
 			
 		}
 		
-//		//This method tests elevatorStopped
-//		//ERROR this.waiting is null
-//		@Test
-//		public void testElevatorStopped() {
-//			scheduler.elevatorStopped(5, false);
-//			assertEquals(false,floors.getLampValue(5, false));
-//		}
-//		
 		
 }

@@ -216,43 +216,44 @@ public class Elevator implements Runnable {
 		} catch (InterruptedException e) {
 		}
 		
-		State state = State.WAITING;
+		State state = State.WAITING; //default state is waiting
 		
 		while(true) {
 			switch(state){
+			
+				//State 1: Waiting for a Request
 				case WAITING: 
 				
 					while(destination==null) {
-						scheduleNewDestination();
+						scheduleNewDestination();  //Get request 
 					}
 					
-					if (currentFloor == destination) {
-						state = State.ARRIVED;	
-					}
-					else if (currentFloor != destination) {
-						state = State.MOVING;
-					}
+					//request received
+					state = State.MOVING;
 
+				//State 2: Elevator is going to destination	
 				case MOVING: 
-
+					
+					//not at destination
 					if (currentFloor != destination) {
 						
-						travelToDestination();
+						travelToDestination(); //go to destination
 					}
 					else {
-						state = State.ARRIVED;
+						state = State.ARRIVED;  
 					}
 				
+				//State 3: Elevator has arrived at destination	
 				case ARRIVED: 
 					
-					this.stopped(currentFloor);
+					this.stopped(currentFloor);  //destination reached
 			
 					this.destination=null;
 					
-					state = State.WAITING;;
+					state = State.WAITING; //Go back and wait for another request
 				default:
 					break;
 				}
-		}
+			}
 		}
 	}

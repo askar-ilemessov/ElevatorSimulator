@@ -1,5 +1,6 @@
-//This class tests the methods in the floors class
 //@author Danish Butt
+//This class tests the methods in the floors class
+
 
 package View;
 
@@ -63,24 +64,7 @@ class FloorsTest {
 			assertEquals(false, floor.getElevatorDirectionIndicator());
 			
 		}
-		
-	
-//		// this.scheduler is null error
-//		//This method tests buttonPress
-//		@Test
-//		public void testButtonPress() {
-//			floor.buttonPress(2, false);
-//			assertEquals(false, floor.getLampValue(2, false));
-//		}
-
-//		//this.waiting is null error
-//		//This method tests elevatorArrived
-//		@Test
-//		public void testElevatorArrived() {
-//			floor.elevatorArrived(5, false);
-//			assertEquals(false,floor.getLampValue(5, false));
-//		}
-
+			
 		//This method tests elevatorLocationUpdated
 		@Test
 		public void testElevatorLocationUpdated() {

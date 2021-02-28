@@ -110,6 +110,8 @@ public class Scheduler extends Thread {
 		elevator.setScheduler(this);
 		floors.setScheduler(this);
 		while(true) {
+			
+			
 		}
 	}
 
