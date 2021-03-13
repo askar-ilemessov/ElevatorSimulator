@@ -22,8 +22,8 @@ public class Floors implements Runnable {
 	//an array of lamps for all floors where each 
 	//floor had 2 lamps: one for going up, one for going down.
 	private boolean [] [] lamps;
-	private boolean elevatorDirectionIndicator;
-	private int elevatorFloorIndicator;
+	private ArrayList<Boolean> elevatorDirectionIndicator = new ArrayList<>();
+	private ArrayList<Integer> elevatorFloorIndicator = new ArrayList<>();
 	
 	private Scheduler scheduler;
 	private ArrayList<SimulatedArrival> arrivals;
@@ -42,12 +42,16 @@ public class Floors implements Runnable {
 		this.arrivals = new ArrayList<SimulatedArrival>();
 	}
 	
-	public Floors(int numberOfFloors, ArrayList<SimulatedArrival> arrivals) {
+	public Floors(int numberOfFloors, int numberOfElevators, ArrayList<SimulatedArrival> arrivals) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = arrivals;
 		this.waiting= new ArrayList[numberOfFloors];
 		for(int i=0; i<numberOfFloors; i++) {
 			this.waiting[i] = new ArrayList<Integer>();
+		}
+		for(int i=0; i<numberOfElevators; i++) {
+			this.elevatorDirectionIndicator.add(new Boolean(false));
+			this.elevatorFloorIndicator.add(0);
 		}
 	}
 	
@@ -71,25 +75,25 @@ public class Floors implements Runnable {
 		return lamps[floor][(direction? 1 : 0)];
 	}
 	
-	public void setElevatorFloorIndicator(int floor) {
-		elevatorFloorIndicator = floor;
-		System.out.println("Floors' elevator location indicator now reads " + 
-		elevatorFloorIndicator);
+	public void setElevatorFloorIndicator(int elevatorNumber, int floor) {
+		elevatorFloorIndicator.set(elevatorNumber, floor);
+		System.out.println("Floors' location indicator for " + elevatorNumber +
+				" now reads " + elevatorFloorIndicator.get(elevatorNumber));
 	}
 	
 	
-	public int getElevatorFloorIndicator() {
-		return elevatorFloorIndicator;
+	public int getElevatorFloorIndicator(int elevatorNumber) {
+		return elevatorFloorIndicator.get(elevatorNumber);
 	}
 	
-	public void setElevatorDirectionIndicator(boolean direction) {
-		elevatorDirectionIndicator = direction;
-		System.out.println("Floors' direction location indicator now reads " + 
-		(elevatorDirectionIndicator? "up": "down"));
+	public void setElevatorDirectionIndicator(int elevatorNumber, boolean direction) {
+		elevatorDirectionIndicator.set(elevatorNumber, direction);
+		System.out.println("Floors' direction indicator for elevator" + elevatorNumber
+		+ "now reads " + (elevatorDirectionIndicator.get(elevatorNumber)? "up": "down"));
 	}
 	
-	public boolean getElevatorDirectionIndicator() {
-		return elevatorDirectionIndicator;
+	public boolean getElevatorDirectionIndicator(int elevatorNumber) {
+		return elevatorDirectionIndicator.get(elevatorNumber);
 	}
 	
 	
@@ -99,7 +103,7 @@ public class Floors implements Runnable {
 	//a request for an elevator to visit this floor
 	//(true = up, false = down)
 	//floor = floor number the button is on
-	public void buttonPress( int floor, boolean direction) {
+	public void buttonPress(int floor, boolean direction) {
 		System.out.println("Floor " + floor 
 				+ " requested an elevator going " + (direction? "up": "down"));
 		setLamp(floor, direction, true);
@@ -107,7 +111,7 @@ public class Floors implements Runnable {
 	}
 	
 	//elevator arrived
-	public void elevatorArrived( int floor, boolean direction) {
+	public void elevatorArrived(int elevatorNumber, int floor, boolean direction) {
 		System.out.println("An elevator arrived at " + floor 
 				+ " going " + (direction? "up": "down"));
 		setLamp(floor, direction, false);
@@ -120,12 +124,12 @@ public class Floors implements Runnable {
 		}
 	}
 	
-	public void elevatorLocationUpdated(int floor) {
-		setElevatorFloorIndicator(floor);
+	public void elevatorLocationUpdated(int elevatorNumber, int floor) {
+		setElevatorFloorIndicator(elevatorNumber, floor);
 	}
 	
-	public void elevatorDirectionUpdated(boolean direction) {
-		setElevatorDirectionIndicator(direction);
+	public void elevatorDirectionUpdated(int elevatorNumber,boolean direction) {
+		setElevatorDirectionIndicator(elevatorNumber, direction);
 	}
 	
 	//_________________________________________________________________
