@@ -17,43 +17,22 @@ import View.Floors;
  */
 public class Scheduler extends Thread {
 	
-	private Elevator elevator;
+	private ArrayList<Elevator> elevators;
 	private Floors floors;
-	private ArrayList<Integer> schedule = new ArrayList<>();
+	private ArrayList<ArrayList<Integer>>  schedules = new ArrayList<ArrayList<Integer>> ();
 	
-	public Scheduler(Elevator elevator, Floors floors, ArrayList<Integer>  schedule) {
-		this.elevator = elevator;
+	public Scheduler(ArrayList<Elevator> elevators, Floors floors, ArrayList<ArrayList<Integer>>   schedules) {
+		this.elevators = elevators;
 		this.floors = floors;
-		this.schedule = schedule;
+		this.schedules = schedules;
 	}
 	
 	private void addToSchedule(int floor, boolean direction) {
-		synchronized(this.schedule){
+		synchronized(this.schedules){
 			
-			if(schedule.size()==0||schedule.size()==1) {//case for where there is zero one location in the queue
-				schedule.add(floor);
-			}
-			else {//case for more than one location in the queue:
-				//go through collection and add at first index where the 
-				//the diffrence between the floors that would be on either 
-				//side of the potential stop location indicates travel in 
-				//the right direction
-				for(int i = 1; i < schedule.size(); i++) {
-					if((schedule.get(i-1)-schedule.get(i)) >=0 && direction) {
-						schedule.add(i+1,floor);
-						break;
-					}
-					else if(schedule.get(i-1)-schedule.get(i) <=0 && !direction) {
-						schedule.add(i,floor);
-						break;
-					}
-					else {//if the elevator never passes this floor going in the right direction, 
-						//just add it at the end of the queue
-						schedule.add(floor);
-					}
-				}
-			}
-			schedule.notifyAll();
+			//To be implemented by Askar and Danish
+			
+			schedules.notifyAll();
 		}
 	}
 	
@@ -68,8 +47,8 @@ public class Scheduler extends Thread {
 		this.addToSchedule(originFloor, direction);
 	}
 	
-	public ArrayList<Integer> getQueue() {
-		return schedule;
+	public ArrayList<Integer> getQueue(int elevatorNumber) {
+		return schedules.get(elevatorNumber);
 	}
 	
 	//elevator stop request from elevator
@@ -82,32 +61,34 @@ public class Scheduler extends Thread {
 	
 	//location updated
 	//update floors
-	public void elevatorLocationUpdated(int floor) {
-		floors.elevatorLocationUpdated(floor);
+	public void elevatorLocationUpdated(int elevatorNumber, int floor) {
+		floors.elevatorLocationUpdated(elevatorNumber, floor);
 	}
 	
 	
 	//direction updated
 	//update floors
-	public void elevatorDirectionUpdated(boolean direction) {
-		floors.elevatorDirectionUpdated(direction);
+	public void elevatorDirectionUpdated(int elevatorNumber, boolean direction) {
+		floors.elevatorDirectionUpdated(elevatorNumber, direction);
 	}
 	
 	//elevator stopped
 	//let floors know
-	public void elevatorStopped(int floor, boolean direction) {
-		floors.elevatorArrived(floor, direction);
+	public void elevatorStopped(int elevatorNumber, int floor, boolean direction) {
+		floors.elevatorArrived(elevatorNumber, floor, direction);
 	}
 	
-	public void elevatorRequestsWork() {
+	public void elevatorRequestsWork(int elevatorNumber) {
 		//do nothing for now, that might change with multi. elevators
 	}
 	
 	//_________________________________________________________________
 	
 	public void run() {
-		//give floors and elevator a reference to you
-		elevator.setScheduler(this);
+		//give floors and elevators a reference to you
+		for(Elevator elevator : elevators) {
+			elevator.setScheduler(this);
+		}
 		floors.setScheduler(this);
 		while(true) {
 			

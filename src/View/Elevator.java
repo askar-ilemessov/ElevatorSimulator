@@ -25,6 +25,9 @@ public class Elevator implements Runnable {
 	private ArrayList<Integer>  schedule;
 	private Integer destination = null;
 	
+	//to be replaced by UDP implementation (probably)
+	private int elevatorNumber;
+	
 	enum State {
 		WAITING,
 		MOVING,
@@ -32,11 +35,12 @@ public class Elevator implements Runnable {
 	}
 	
 	
-	public Elevator(int numberOfFloors, ArrayList<Integer> schedule) {
+	public Elevator(int numberOfFloors, ArrayList<Integer> schedule, int elevatorNumber) {
 		lamps = new boolean[numberOfFloors];
 		motor = 0; //Stationary
 		door = false; //door closed
 		this.schedule = schedule;
+		this.elevatorNumber = elevatorNumber;
 	}
 	
 	public void setSchedule(ArrayList<Integer>  schedule) {
@@ -75,13 +79,13 @@ public class Elevator implements Runnable {
 	//(true=open)
 	private void setDoor(boolean state) {
 		door = state;
-		System.out.println("Elevator door is now "+ (state? "open": "closed"));
+		System.out.println("Elevator " + elevatorNumber + " door is now "+ (state? "open": "closed"));
 		
 	}
 	
 	public void setCurrentFloor(int floor) {
 		currentFloor = floor;
-		System.out.println("Elevator is now at floor "+ floor);
+		System.out.println("Elevator " + elevatorNumber + " is now at floor "+ floor);
 	}
 	
 	
@@ -93,7 +97,7 @@ public class Elevator implements Runnable {
 	//true = up
 	public void setDirection(boolean direction) {
 		currentDirection = direction;
-		System.out.println("Elevator is going "+ (direction? "up": "down"));
+		System.out.println("Elevator " + elevatorNumber + " is going "+ (direction? "up": "down"));
 	}
 	
 	public boolean getDirection() {
@@ -102,7 +106,7 @@ public class Elevator implements Runnable {
 	
 	public void setDesination(int floor) {
 		destination = floor;
-		System.out.println("Elevator has the new destination of floor " + destination);
+		System.out.println("Elevator " + elevatorNumber + " has the new destination of floor " + destination);
 	}
 	
 	public int getDesination() {
@@ -127,6 +131,7 @@ public class Elevator implements Runnable {
 	public void locationUpdate(int location) {
 		setCurrentFloor(location);
 		//update scheduler
+		scheduler.elevatorLocationUpdated(elevatorNumber,location);
 		
 	}
 	
@@ -135,16 +140,16 @@ public class Elevator implements Runnable {
 	//(location = floor number)
 	public void stopped(int location) {
 		setMotor(0);
-		System.out.println("Elevator stopped at floor " + location);
+		System.out.println("Elevator" + elevatorNumber + " stopped at floor " + location);
 		//update scheduler
-		scheduler.elevatorStopped(location, currentDirection);
+		scheduler.elevatorStopped(elevatorNumber, location, currentDirection);
 		//turn off lamp
 		setLamp(location, false);
 		//open doors
 		setDoor(true);
 		//wait to load
 		try {
-			System.out.println("Loading elevator car...\n");
+			System.out.println("Loading elevator" + elevatorNumber + "'s car...\n");
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -176,8 +181,8 @@ public class Elevator implements Runnable {
 	//request new destination from scheduler
 	//will be updated when there is new work on the queue
 	private void requestWork() {
-		scheduler.elevatorRequestsWork();
-		System.out.println("Elevator is on standby");
+		scheduler.elevatorRequestsWork(elevatorNumber);
+		System.out.println("Elevator " + elevatorNumber + " is on standby");
 	}
 	
 	
