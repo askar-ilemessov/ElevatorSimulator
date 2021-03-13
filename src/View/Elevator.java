@@ -21,8 +21,9 @@ public class Elevator implements Runnable {
 	//indicators
 	private int currentFloor;
 	private boolean currentDirection;
+	private int id;
 	
-	private ArrayList<Integer>  schedule;
+	ArrayList<ArrayList<Integer>> schedule = new ArrayList<ArrayList<Integer>>();
 	private Integer destination = null;
 	
 	enum State {
@@ -32,14 +33,19 @@ public class Elevator implements Runnable {
 	}
 	
 	
-	public Elevator(int numberOfFloors, ArrayList<Integer> schedule) {
+	public Elevator(int id, int numberOfFloors, ArrayList<ArrayList<Integer>> schedule) {
+		id = this.id;
 		lamps = new boolean[numberOfFloors];
 		motor = 0; //Stationary
 		door = false; //door closed
 		this.schedule = schedule;
 	}
+
+	public int getId() {
+		return id;
+	}
 	
-	public void setSchedule(ArrayList<Integer>  schedule) {
+	public void setSchedule(ArrayList<ArrayList<Integer>>  schedule) {
 		this.schedule = schedule;
 	}
 	
@@ -115,11 +121,11 @@ public class Elevator implements Runnable {
 	//stop requested
 	//updates scheduler of an interternal floor button was pressed
 	//call in floors according to input file
-	public void buttonPress(int destinationFloor) {
-		setLamp(destinationFloor, true);
-		scheduler.elevatorButtonPressed(destinationFloor, currentDirection);
-		
-	}
+//	public void buttonPress(int destinationFloor) {
+//		setLamp(destinationFloor, true);
+//		scheduler.elevatorButtonPressed(destinationFloor, currentDirection);
+//		
+//	}
 	
 	//called periodically when in motion
 	//floor change as a result of regular motion (
