@@ -30,7 +30,7 @@ class Main {
 		// floor numbers in order the elevator is to visit them
 		// make an array of queues for multiple elevators, one for each elevator
 		ArrayList<ArrayList<Integer>> elevatorSchedules = new ArrayList<ArrayList<Integer>>();
-		for(int i=0; i< numberOfElevators; i++) {
+		for(int i=0; i<numberOfElevators; i++) {
 			elevatorSchedules.add(new ArrayList<Integer>());
 		}
 		
@@ -63,7 +63,7 @@ class Main {
 		Thread schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		
-		for(int i=0; i< numberOfElevators; i++) {
+		for(int i=0; i<numberOfElevators; i++) {
 			elevatorThreads.get(i).start();
 		}
 		floorsThread.start();

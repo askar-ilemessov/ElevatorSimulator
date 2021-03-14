@@ -51,6 +51,9 @@ public class Elevator implements Runnable {
 		this.scheduler = scheduler;
 	}
 	
+	public int getNumber() {
+		return elevatorNumber;
+	}
 	
 	
 	//floor is index in lamps array
@@ -109,7 +112,7 @@ public class Elevator implements Runnable {
 		System.out.println("Elevator " + elevatorNumber + " has the new destination of floor " + destination);
 	}
 	
-	public int getDesination() {
+	public Integer getDesination() {
 		return destination;
 	}
 	
@@ -121,7 +124,7 @@ public class Elevator implements Runnable {
 	//call in floors according to input file
 	public void buttonPress(int destinationFloor) {
 		setLamp(destinationFloor, true);
-		scheduler.elevatorButtonPressed(destinationFloor, currentDirection);
+		scheduler.elevatorButtonPressed(destinationFloor, currentDirection, currentFloor);
 		
 	}
 	

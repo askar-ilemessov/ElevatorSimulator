@@ -42,6 +42,7 @@ public class Floors implements Runnable {
 		this.arrivals = new ArrayList<SimulatedArrival>();
 	}
 	
+
 	public Floors(int numberOfFloors, int numberOfElevators, ArrayList<SimulatedArrival> arrivals) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = arrivals;
@@ -119,7 +120,7 @@ public class Floors implements Runnable {
 		//call elevator button press in scheduler for each of those waiting 
 		//on this floor and going the appropriate direction
 		for (int i=0; i < waiting[floor-1].size(); i++) {
-				scheduler.elevatorButtonPressed(waiting[floor-1].get(i), direction);
+				scheduler.elevatorButtonPressed(waiting[floor-1].get(i), direction, floor);
 				waiting[floor-1].remove(i);
 		}
 	}
