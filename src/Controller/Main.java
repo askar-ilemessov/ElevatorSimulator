@@ -20,8 +20,9 @@ class Main {
 
 	/**
 	 * @param args
+	 * @throws  
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args){
 
 		int numberOfFloors = 7;
 		int numberOfElevators = 3;
@@ -56,19 +57,30 @@ class Main {
 			elevatorThreads.add(new Thread(elevators.get(i), "Elevator "+i));
 		}
 
-		Floors floors = new Floors(numberOfFloors, numberOfElevators, list);
+		Floors floors = new Floors(numberOfFloors, numberOfElevators, list, "3000");
 		Thread floorsThread = new Thread(floors, "Floors");
 
-		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules);
+		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, "3001");
 		Thread schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		
 		for(int i=0; i<numberOfElevators; i++) {
 			elevatorThreads.get(i).start();
 		}
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		floorsThread.start();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		schedulerThread.start();
 
 	}
-
 }
