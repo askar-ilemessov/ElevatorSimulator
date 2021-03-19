@@ -6,14 +6,11 @@ package Controller;
  * each elevator would need their own scheduler.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import View.Elevator;
 import View.Floors;
-import View.InputFileReader;
-import View.SimulatedArrival;
+
 
 import assignment3Package.Client;
 

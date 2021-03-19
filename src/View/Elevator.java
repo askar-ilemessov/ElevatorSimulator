@@ -26,7 +26,7 @@ public class Elevator implements Runnable {
 	private boolean currentDirection;
 	private int id;
 	
-	ArrayList<ArrayList<Integer>> schedule = new ArrayList<ArrayList<Integer>>();
+	ArrayList<Integer> schedule = new ArrayList<Integer>();
 	private Integer destination = null;
 	
 	private Client client;
