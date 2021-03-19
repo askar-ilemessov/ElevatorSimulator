@@ -20,15 +20,20 @@ class Main {
 
 	/**
 	 * @param args
+	 * @throws  
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args){
 
 		int numberOfFloors = 7;
+		int numberOfElevators = 3;
 		
 
 		// floor numbers in order the elevator is to visit them
 		// make an array of queues for multiple elevators, one for each elevator
-		ArrayList<Integer> schedule = new ArrayList<>();
+		ArrayList<ArrayList<Integer>> elevatorSchedules = new ArrayList<ArrayList<Integer>>();
+		for(int i=0; i<numberOfElevators; i++) {
+			elevatorSchedules.add(new ArrayList<Integer>());
+		}
 		
 		
 		//take in the file of arrivals to be simulated and store them to be 
@@ -43,20 +48,40 @@ class Main {
 			e.printStackTrace();
 		}
 		
-		//initialize and start threads
-		Elevator elevator1 = new Elevator(numberOfFloors, schedule);
-		Thread elevator1Thread = new Thread(elevator1, "Elevator 1");
 
-		Floors floors = new Floors(numberOfFloors, list);
+	
+		//initialize and start threads
+		ArrayList<Elevator> elevators = new ArrayList<Elevator>();
+		ArrayList<Thread> elevatorThreads = new ArrayList<Thread>();
+		for(int i=0; i< numberOfElevators; i++) {
+			elevators.add(new Elevator(numberOfFloors, elevatorSchedules.get(i), i));
+			elevatorThreads.add(new Thread(elevators.get(i), "Elevator "+i));
+		}
+
+		Floors floors = new Floors(numberOfFloors, numberOfElevators, list, "3000");
 		Thread floorsThread = new Thread(floors, "Floors");
 
-		Scheduler scheduler = new Scheduler(elevator1, floors, schedule);
+		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, "3001");
 		Thread schedulerThread = new Thread(scheduler, "Scheduler");
 		
-		elevator1Thread.start();
+		
+		for(int i=0; i<numberOfElevators; i++) {
+			elevatorThreads.get(i).start();
+		}
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		floorsThread.start();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		schedulerThread.start();
 
 	}
-
 }

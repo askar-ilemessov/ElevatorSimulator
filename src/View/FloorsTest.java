@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class FloorsTest {
 
 		//Create Floors object
-		private Floors floor = new Floors(7);
+		private Floors floor = new Floors(7, "2002");
 		
 		
 		
