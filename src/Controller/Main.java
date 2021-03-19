@@ -20,23 +20,20 @@ class Main {
 
 	/**
 	 * @param args
+	 * @throws  
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args){
 
 		int numberOfFloors = 7;
+		int numberOfElevators = 3;
 		
 
 		// floor numbers in order the elevator is to visit them
 		// make an array of queues for multiple elevators, one for each elevator
-		ArrayList<Integer> schedule1 = new ArrayList<>();
-		ArrayList<Integer> schedule2 = new ArrayList<>();
-		ArrayList<Integer> schedule3 = new ArrayList<>();
-		
-		//Add them to schedule arraylist that will handle all of them
-		ArrayList<ArrayList<Integer>> schedule = new ArrayList<ArrayList<Integer>>();
-		schedule.add(schedule1);
-		schedule.add(schedule2);
-		schedule.add(schedule3);
+		ArrayList<ArrayList<Integer>> elevatorSchedules = new ArrayList<ArrayList<Integer>>();
+		for(int i=0; i<numberOfElevators; i++) {
+			elevatorSchedules.add(new ArrayList<Integer>());
+		}
 		
 		
 		//take in the file of arrivals to be simulated and store them to be 
@@ -51,37 +48,40 @@ class Main {
 			e.printStackTrace();
 		}
 		
-		//Create 3 elevators
-		Elevator elevator1 = new Elevator(1, numberOfFloors, schedule);
-		Thread elevator1Thread = new Thread(elevator1, "Elevator 1");
-		
-		Elevator elevator2 = new Elevator(2, numberOfFloors, schedule);
-		Thread elevator2Thread = new Thread(elevator2, "Elevator 2");
-		
-		Elevator elevator3 = new Elevator(3, numberOfFloors, schedule);
-		Thread elevator3Thread = new Thread(elevator3, "Elevator 3");
-		
-		ArrayList<Elevator> elevator = new ArrayList<Elevator>();
-		
-		elevator1Thread.start();
-		elevator2Thread.start();
-		elevator3Thread.start();
-		
-		elevator.add(elevator1);
-		elevator.add(elevator2);
-		elevator.add(elevator3);
-		
-		
 
-		Floors floors = new Floors(numberOfFloors, list);
+	
+		//initialize and start threads
+		ArrayList<Elevator> elevators = new ArrayList<Elevator>();
+		ArrayList<Thread> elevatorThreads = new ArrayList<Thread>();
+		for(int i=0; i< numberOfElevators; i++) {
+			elevators.add(new Elevator(numberOfFloors, elevatorSchedules.get(i), i));
+			elevatorThreads.add(new Thread(elevators.get(i), "Elevator "+i));
+		}
+
+		Floors floors = new Floors(numberOfFloors, numberOfElevators, list, "3000");
 		Thread floorsThread = new Thread(floors, "Floors");
 
-		Scheduler scheduler = new Scheduler(elevator, floors, schedule);
+		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, "3001");
 		Thread schedulerThread = new Thread(scheduler, "Scheduler");
-	
+		
+		
+		for(int i=0; i<numberOfElevators; i++) {
+			elevatorThreads.get(i).start();
+		}
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		floorsThread.start();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		schedulerThread.start();
 
 	}
-
 }
