@@ -48,8 +48,9 @@ class Main {
 			e.printStackTrace();
 		}
 		
-		//initialize and start threads
 
+	
+		//initialize and start threads
 		ArrayList<Elevator> elevators = new ArrayList<Elevator>();
 		ArrayList<Thread> elevatorThreads = new ArrayList<Thread>();
 		for(int i=0; i< numberOfElevators; i++) {

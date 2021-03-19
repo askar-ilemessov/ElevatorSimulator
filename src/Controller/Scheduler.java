@@ -94,10 +94,41 @@ public class Scheduler extends Thread {
 			schedules.get(sendRequest).add(destinationFloor);
 //			System.out.println("Elevator " + (sendRequest) + " is going to " + destinationFloor);
 			schedules.get(sendRequest).notifyAll();
-		
 		}
 	}
 	
+	
+	
+//	private void addToSchedule(int destinationFloor, boolean direction, int currentFloor) {
+//		synchronized(this.schedule){
+//			
+//			if(schedule.size()==0||schedule.size()==1) {//case for where there is zero one location in the queue
+//				schedule.add(destinationFloor);
+//			}
+//			else {//case for more than one location in the queue:
+//				//go through collection and add at first index where the 
+//				//the diffrence between the floors that would be on either 
+//				//side of the potential stop location indicates travel in 
+//				//the right direction
+//				for(int i = 1; i < schedule.size(); i++) {
+//					if((schedule.get(i-1)-schedule.get(i)) >=0 && direction) {
+//						schedule.add(i+1,floor);
+//						break;
+//					}
+//					else if(schedule.get(i-1)-schedule.get(i) <=0 && !direction) {
+//						schedule.add(i,floor);
+//						break;
+//					}
+//					else {//if the elevator never passes this floor going in the right direction, 
+//						//just add it at the end of the queue
+//						schedule.add(floor);
+//					}
+//				}
+//			}
+//			schedule.notifyAll();
+//		}
+//	}
+//	
 	//Event Handeling_________________________________________________
 	//Performs nessacary tasks in response to events
 	//will be overhauled with the UDP update
