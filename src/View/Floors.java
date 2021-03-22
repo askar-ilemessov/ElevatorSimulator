@@ -1,13 +1,10 @@
 package View;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import Controller.Scheduler;
-import Controller.Scheduler.RcvProcess;
 import assignment3Package.Client;
 
 
@@ -18,7 +15,7 @@ import assignment3Package.Client;
  */
 
 /**
- * @author madelynkrasnay
+ * @author madelynkrasnay IfiokUdoh YasinJaamac
  *
  */
 public class Floors implements Runnable {
@@ -33,7 +30,6 @@ public class Floors implements Runnable {
 	private ArrayList<Integer> elevatorFloorIndicator = new ArrayList<>();
 	
 	private Scheduler scheduler;
-//	private String scheduler;
 	private ArrayList<SimulatedArrival> arrivals;
 	
 	//Collection of people waiting for elevators to arrive
@@ -55,6 +51,7 @@ public class Floors implements Runnable {
 		client = new Client(portNumber);
 	}
 	
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public Floors(int numberOfFloors, int numberOfElevators, ArrayList<SimulatedArrival> arrivals, int portNumber) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = arrivals;
@@ -67,7 +64,7 @@ public class Floors implements Runnable {
 			this.elevatorDirectionIndicator.add(new Boolean(false));
 			this.elevatorFloorIndicator.add(0);
 		}
-		client = new Client(portNumber);
+		client = new Client(portNumber); //nitialize client for sending and receiving remote procedure calls
 
 	}
 	
@@ -126,7 +123,7 @@ public class Floors implements Runnable {
 		
 		String data = "FloorButtonPress" + "," + floor + "," + Boolean.toString(direction);
 		try {
-			this.client.sendData(data,3001); //should append to client queue
+			this.client.sendData(data,3001); //send remote procedure call to scheduler receive socket
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -142,12 +139,9 @@ public class Floors implements Runnable {
 		//call elevator button press in scheduler for each of those waiting 
 		//on this floor and going the appropriate direction
 		for (int i=0; i < waiting[floor-1].size(); i++) {
-//				scheduler.elevatorButtonPressed(waiting[floor-1].get(i), direction, floor);
-//				String data = "elevatorButtonPressed" + "," + waiting[floor-1].get(i) + "," + Boolean.toString(direction) + ":" + scheduler.portNumber;
 				String data = "elevatorButtonPressed" + "," + waiting[floor-1].get(i) + "," + Boolean.toString(direction) + "," + floor;
 				try {
-//					this.client.sndqueue.add(data + ":3001"); //should append to client queue
-					this.client.sendData(data, 3001);
+					this.client.sendData(data, 3001);//send remote procedure call to scheduler receive socket
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -204,7 +198,7 @@ public class Floors implements Runnable {
 	//should wait to be notified by the scheduler
 	//should notify arrivals as they appear in the floor input file
 	public void run() {
-		Thread rcvProccessThread = new Thread(new RcvProcess(this));
+		Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls
 		rcvProccessThread.start();
 		try {
 			Thread.sleep(50);//sleep long enough for all threads to set up and initialize (should be done cleaner)

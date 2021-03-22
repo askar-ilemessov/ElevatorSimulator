@@ -6,21 +6,16 @@ package Controller;
  * each elevator would need their own scheduler.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import View.Elevator;
 import View.Floors;
-import View.InputFileReader;
-import View.SimulatedArrival;
-
 import assignment3Package.Client;
 
 /**
- * @author madelynkrasnay
+ * @author madelynkrasnay IfiokUdoh YasinJaamac
  *
  */
 public class Scheduler extends Thread {
@@ -42,16 +37,6 @@ public class Scheduler extends Thread {
 		this.client = new Client(portNUmber);
 	}
 	
-//	public Scheduler(ArrayList<Integer>  schedule, String portNumber, String elevator, String floors) {
-//		this.elevator = elevator;
-//		this.floors = floors;
-//		this.schedule = schedule;
-//		this.portNumber = portNumber;
-//		this.client = new Client(portNumber);
-//		Thread SchedulerClientThread = new Thread(this.client);
-//		SchedulerClientThread.setName("SchedulerClient");
-//		SchedulerClientThread.start();
-//	}
 	
 	private void addFloorButtonPressedToSchedule(int originFloor, boolean direction) {
 		int sendRequestToElevator=30;
@@ -138,11 +123,9 @@ public class Scheduler extends Thread {
 	//direction updated
 	//update floors
 	public void elevatorDirectionUpdated(int elevatorNumber, boolean direction) {
-//		floors.elevatorDirectionUpdated(direction);
 		String data = "elevatorDirectionUpdated" + "," + elevatorNumber + "," + Boolean.toString(direction);
 		try {
-//			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
-			this.client.sendData(data, 3003);
+			this.client.sendData(data, 3003); //send remote procedure call to Floor receive socket
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -152,11 +135,9 @@ public class Scheduler extends Thread {
 	//elevator stopped
 	//let floors know
 	public void elevatorStopped(int elevatorNumber, int floor, boolean direction) {
-//		floors.elevatorArrived(floor, direction);
 		String data = "elevatorArrived" + "," + elevatorNumber + "," + floor + "," + Boolean.toString(direction);
 		try {
-//			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
-			this.client.sendData(data, 3003);
+			this.client.sendData(data, 3003); //send remote procedure call to Floor receive socket
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -188,7 +169,6 @@ public class Scheduler extends Thread {
 			String[] param = mssg.trim().split(",");
 			switch(param[0]) {
 				case "FloorButtonPress":
-//					System.out.println("Rcv floor button press");
 					FloorButtonPress(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]));
 					break;
 				case "elevatorButtonPressed":
@@ -198,14 +178,12 @@ public class Scheduler extends Thread {
 					elevatorStopped(Integer.parseInt(param[1]),Integer.parseInt(param[2]), Boolean.parseBoolean(param[3]));
 					break;
 				case "elevatorRequestsWork":
-//					System.out.println("elevatorRequestsWork" + param[1].trim() + " testiing");
 					elevatorRequestsWork(Integer.parseInt(param[1]));
 					break;
 				case "elevatorLocationUpdated":
 					elevatorLocationUpdated(Integer.parseInt(param[1]), Integer.parseInt(param[2]));
 					break;
 				default:
-					System.out.println("Not1 : " + param[0] + " test");
 					break;
 			}
 			
@@ -214,7 +192,7 @@ public class Scheduler extends Thread {
 	//_________________________________________________________________
 	
 	public void run() {
-		Thread rcvProccessThread = new Thread(new RcvProcess(this));
+		Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls 
 		rcvProccessThread.start();
 		try {
 			Thread.sleep(1000);

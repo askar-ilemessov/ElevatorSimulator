@@ -52,8 +52,7 @@ public class Elevator implements Runnable {
 		door = false; //door closed
 		this.schedule = schedule;
 		this.elevatorNumber = elevatorNumber;
-//		this.portNumber = (elevatorNumber + 2005) ;
-		this.client = new Client(2010 + portNumber);
+		this.client = new Client(2010 + portNumber); //creates client with port number based on elevator number
 
 	}
 	
@@ -137,11 +136,9 @@ public class Elevator implements Runnable {
 	//call in floors according to input file
 	public void buttonPress(int destinationFloor) {
 		setLamp(destinationFloor, true);
-//		scheduler.elevatorButtonPressed(destinationFloor, currentDirection);
 		String data = "elevatorButtonPressed" + "," + destinationFloor + "," + Boolean.toString(currentDirection);
 		try {
-//			this.client.sndqueue.add(data + ":3001"); //should append to client queue
-			this.client.sendData(data, 3001);
+			this.client.sendData(data, 3001);//send remote procedure call to Scheduler receive socket
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -155,11 +152,9 @@ public class Elevator implements Runnable {
 	public void locationUpdate(int location) {
 		setCurrentFloor(location);
 		//update scheduler
-//		scheduler.elevatorLocationUpdated(elevatorNumber,location);
 		String data = "elevatorLocationUpdated" + "," + elevatorNumber + "," + location;
 		try {
-//			this.client.sndqueue.add(data + ":3001"); //should append to client queue
-			this.client.sendData(data, 3001);
+			this.client.sendData(data, 3001);//send remote procedure call to Scheduler receive socket
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -174,11 +169,9 @@ public class Elevator implements Runnable {
 		setMotor(0);
 		System.out.println("Elevator" + elevatorNumber + " stopped at floor " + location);
 		//update scheduler
-//		scheduler.elevatorStopped(location, currentDirection);
 		String data = "elevatorStopped" + "," + elevatorNumber + "," + location + "," + Boolean.toString(currentDirection);
 		try {
-//			this.client.sndqueue.add(data + ":3001"); //should append to client queue
-			this.client.sendData(data, 3001);
+			this.client.sendData(data, 3001);//send remote procedure call to Scheduler receive socket
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -223,12 +216,10 @@ public class Elevator implements Runnable {
 	//request new destination from scheduler
 	//will be updated when there is new work on the queue
 	private void requestWork() {
-//		scheduler.elevatorRequestsWork();
 		String data = "elevatorRequestsWork" + "," + elevatorNumber;
 		try {
-//			this.client.sndqueue.add(data + ":3001"); //should append to client queue
 			System.out.println("Elevator " + elevatorNumber + " is on standby");
-			this.client.sendData(data, 3001);
+			this.client.sendData(data, 3001);//send remote procedure call to Scheduler receive socket
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -291,7 +282,7 @@ public class Elevator implements Runnable {
 	
 	//run()
 	public void run() {
-		Thread rcvProccessThread = new Thread(new RcvProcess(this));
+		Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls
 		rcvProccessThread.start();
 		//give the Scheduler a second to set the scheduler
 		try {
@@ -351,10 +342,5 @@ public class Elevator implements Runnable {
 	public int getNumber() {
 		return elevatorNumber;
 	}
-	
 
-	
-//	public static void main(String[] str) {
-	
-//	}
-	}
+}
