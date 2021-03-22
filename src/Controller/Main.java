@@ -13,7 +13,7 @@ import View.SimulatedArrival;
  */
 
 /**
- * @author madelynkrasnay
+ * @author madelynkrasnay IfiokUdoh
  *
  */
 class Main {
@@ -48,20 +48,21 @@ class Main {
 			e.printStackTrace();
 		}
 		
-
-	
 		//initialize and start threads
+
 		ArrayList<Elevator> elevators = new ArrayList<Elevator>();
 		ArrayList<Thread> elevatorThreads = new ArrayList<Thread>();
 		for(int i=0; i< numberOfElevators; i++) {
-			elevators.add(new Elevator(numberOfFloors, elevatorSchedules.get(i), i));
+			elevators.add(new Elevator(numberOfFloors, elevatorSchedules.get(i), i, i*2)); //set port to i*2 to accommodate for 2 ports per elevator, ! for sending and 1 for receiving
 			elevatorThreads.add(new Thread(elevators.get(i), "Elevator "+i));
 		}
 
-		Floors floors = new Floors(numberOfFloors, numberOfElevators, list, "3000");
+		//Floor Subsytem Thread on port 3002
+		Floors floors = new Floors(numberOfFloors, numberOfElevators, list, 3002);
 		Thread floorsThread = new Thread(floors, "Floors");
 
-		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, "3001");
+		//Scheduler thread on port 3000
+		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, 3000);
 		Thread schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		
@@ -75,13 +76,8 @@ class Main {
 			e.printStackTrace();
 		}
 		floorsThread.start();
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		schedulerThread.start();
+
 
 	}
 }
