@@ -48,20 +48,19 @@ class Main {
 			e.printStackTrace();
 		}
 		
-
-	
 		//initialize and start threads
+
 		ArrayList<Elevator> elevators = new ArrayList<Elevator>();
 		ArrayList<Thread> elevatorThreads = new ArrayList<Thread>();
 		for(int i=0; i< numberOfElevators; i++) {
-			elevators.add(new Elevator(numberOfFloors, elevatorSchedules.get(i), i));
+			elevators.add(new Elevator(numberOfFloors, elevatorSchedules.get(i), i, i*2));
 			elevatorThreads.add(new Thread(elevators.get(i), "Elevator "+i));
 		}
 
-		Floors floors = new Floors(numberOfFloors, numberOfElevators, list, "3000");
+		Floors floors = new Floors(numberOfFloors, numberOfElevators, list, 3002);
 		Thread floorsThread = new Thread(floors, "Floors");
 
-		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, "3001");
+		Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, 3000);
 		Thread schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		
@@ -75,13 +74,8 @@ class Main {
 			e.printStackTrace();
 		}
 		floorsThread.start();
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		schedulerThread.start();
+
 
 	}
 }

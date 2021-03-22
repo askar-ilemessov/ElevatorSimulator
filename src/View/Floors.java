@@ -1,12 +1,14 @@
 package View;
 
-
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import Controller.Scheduler;
-
+import Controller.Scheduler.RcvProcess;
 import assignment3Package.Client;
-import assignment3Package.IntermediateHost;
 
 
 
@@ -42,27 +44,22 @@ public class Floors implements Runnable {
 	//those integers do not need to be unique even though elevators only need to respond to unique values in those arrays
 	//as this allows us to track the number of people boarding the elevator later when we consider elevator capacity.
 	private ArrayList<Integer>[] waiting; 
-	private Client client;
+	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
 	public String portNumber;
-//	public Poll pollreceive;
-//	public Thread pollReceiveThread;
+	public Client client;
+
 	
-	public Floors(int numberOfFloors, String portNumber) {
+	public Floors(int numberOfFloors, int portNumber) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = new ArrayList<SimulatedArrival>();
-		this.portNumber = portNumber;
-		this.client = new Client(portNumber , 3007, 3008);
-//		this.pollreceive = new Poll(this.client);
-////		
-//		this.pollReceiveThread = new Thread(pollreceive);
-		
+		client = new Client(portNumber);
 	}
 	
-	public Floors(int numberOfFloors, int numberOfElevators, ArrayList<SimulatedArrival> arrivals, String portNumber) {
+	public Floors(int numberOfFloors, int numberOfElevators, ArrayList<SimulatedArrival> arrivals, int portNumber) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = arrivals;
 		this.waiting= new ArrayList[numberOfFloors];
-		this.client = new Client(portNumber, 3007, 3008);
+
 		for(int i=0; i<numberOfFloors; i++) {
 			this.waiting[i] = new ArrayList<Integer>();
 		}
@@ -70,10 +67,8 @@ public class Floors implements Runnable {
 			this.elevatorDirectionIndicator.add(new Boolean(false));
 			this.elevatorFloorIndicator.add(0);
 		}
-		
-//		this.pollreceive = new Poll(this.client);
-////		
-//		this.pollReceiveThread = new Thread(pollreceive);
+		client = new Client(portNumber);
+
 	}
 	
 	public void setScheduler(Scheduler scheduler) {
@@ -129,11 +124,9 @@ public class Floors implements Runnable {
 				+ " requested an elevator going " + (direction? "up": "down"));
 		setLamp(floor, direction, true);
 		
-//		String data = "FloorButtonPress" + "," + floor + "," + Boolean.toString(direction) + ":" + scheduler.portNumber;
 		String data = "FloorButtonPress" + "," + floor + "," + Boolean.toString(direction);
 		try {
-			this.client.sndqueue.add(data + ":3001"); //should append to client queue
-//			this.client.sendData(data, "3001");
+			this.client.sendData(data,3001); //should append to client queue
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,7 +134,7 @@ public class Floors implements Runnable {
 	}
 	
 	//elevator arrived
-	public void elevatorArrived( int floor, boolean direction) {
+	public void elevatorArrived(int elevatorNumber, int floor, boolean direction) {
 		System.out.println("An elevator arrived at " + floor 
 				+ " going " + (direction? "up": "down"));
 		setLamp(floor, direction, false);
@@ -149,12 +142,12 @@ public class Floors implements Runnable {
 		//call elevator button press in scheduler for each of those waiting 
 		//on this floor and going the appropriate direction
 		for (int i=0; i < waiting[floor-1].size(); i++) {
-//				scheduler.elevatorButtonPressed(waiting[floor-1].get(i), direction);
+//				scheduler.elevatorButtonPressed(waiting[floor-1].get(i), direction, floor);
 //				String data = "elevatorButtonPressed" + "," + waiting[floor-1].get(i) + "," + Boolean.toString(direction) + ":" + scheduler.portNumber;
-				String data = "elevatorButtonPressed" + "," + waiting[floor-1].get(i) + "," + Boolean.toString(direction);
+				String data = "elevatorButtonPressed" + "," + waiting[floor-1].get(i) + "," + Boolean.toString(direction) + "," + floor;
 				try {
-					this.client.sndqueue.add(data + ":3001"); //should append to client queue
-//					this.client.sendData(data, "3001");
+//					this.client.sndqueue.add(data + ":3001"); //should append to client queue
+					this.client.sendData(data, 3001);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -171,12 +164,23 @@ public class Floors implements Runnable {
 		setElevatorDirectionIndicator(elevatorNumber, direction);
 	}
 	
+	public class RcvProcess implements Runnable{
+		private Floors f;
+		public RcvProcess(Floors f) {
+			this.f = f;
+		}
+		public void run() {
+			while(true) {
+				f.client.recv(f.rcvqueue);
+				f.processRcvQueue();
+			}
+		}
+	}
+	
 	public void processRcvQueue() {
-//		System.out.println("rcvqueue size in Floors is: " + this.client.rcvqueue.size());
-		while(!this.client.rcvqueue.isEmpty()) {
-			String mssg = this.client.rcvqueue.remove();
-			String[] param = mssg.split(",");
-			System.out.println(param[0]);
+		while(!this.rcvqueue.isEmpty()) {
+			String mssg = this.rcvqueue.remove();
+			String[] param = mssg.trim().split(",");
 			switch(param[0]) {
 				case "elevatorDirectionUpdated":
 					elevatorDirectionUpdated(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]));
@@ -185,7 +189,7 @@ public class Floors implements Runnable {
 					elevatorLocationUpdated(Integer.parseInt(param[1]), Integer.parseInt(param[2]));
 					break;
 				case "elevatorArrived":
-					elevatorArrived(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]));
+					elevatorArrived(Integer.parseInt(param[1]), Integer.parseInt(param[2]), Boolean.parseBoolean(param[3]));
 					break;
 				default:
 					;
@@ -200,8 +204,8 @@ public class Floors implements Runnable {
 	//should wait to be notified by the scheduler
 	//should notify arrivals as they appear in the floor input file
 	public void run() {
-		Thread ClientThread = new Thread(client, "Floors");
-		ClientThread.start();
+		Thread rcvProccessThread = new Thread(new RcvProcess(this));
+		rcvProccessThread.start();
 		try {
 			Thread.sleep(50);//sleep long enough for all threads to set up and initialize (should be done cleaner)
 			//capture the time
@@ -212,69 +216,20 @@ public class Floors implements Runnable {
 				
 					//sleep until the next arrival is scheduled
 		        	Thread.sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
-//		        	System.out.println("Here");
+
 		        	//simulate someone at the specified floor pressing the button in the appropriate direction
 		        	buttonPress(arrival.getOriginFloor(), arrival.isDirection());
-		        	System.out.println("FBP!!");
 		        	
 		        	//add person to collection of waiting people
 		        	waiting[arrival.getOriginFloor()-1].add(arrival.getDestinationFloor());
-		//        	
-			}
-//			Thread floorClientThread = new Thread(this.client);
-//			floorClientThread.setName("FloorClient");
-//			floorClientThread.start();
+     	
+			}	
 			System.out.println("done");
-			while(true) {
-				processRcvQueue(); //Process remote procedure calls in rcvqueue
-			}
 		} catch (InterruptedException e) {
 		
 		}
 	}
 
-//	class Poll implements Runnable{
-//		private Client c;
-//		
-//		public Poll(Client c) {
-//			this.c =c;
-//		}
-//		@Override
-//        public void run() {
-//			try {
-//				c.recieve();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-//	public static void main(String[] str) {
-//		int numberOfFloors = 7;
-//		
-//
-//		// floor numbers in order the elevator is to visit them
-//		// make an array of queues for multiple elevators, one for each elevator
-//		ArrayList<Integer> schedule = new ArrayList<>();
-//		
-//		
-//		//take in the file of arrivals to be simulated and store them to be 
-//		//initialized in floors
-//		InputFileReader ifr = new InputFileReader();
-//		File file = new File("src/Model/InputFile.txt");
-//		ArrayList<SimulatedArrival> list = new ArrayList<SimulatedArrival>();
-//		try {
-//			list = ifr.readInFile(file);
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		
-//		Floors floors = new Floors(numberOfFloors, list, "3001", "3002");
-//		Thread floorsThread = new Thread(floors, "Floors");
-//		floorsThread.start();
-//		
-//	}
+
 
 }

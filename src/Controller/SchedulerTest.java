@@ -16,67 +16,54 @@ import View.Floors;
 
 class SchedulerTest {
 	
-	private Elevator elevator;
+	private ArrayList<Elevator> elevator;
 	private Floors floors;
-	private ArrayList<Integer> schedule = new ArrayList<>();
+	private ArrayList<ArrayList<Integer>>  schedules = new ArrayList<ArrayList<Integer>> ();
 	private Scheduler scheduler;
 	
 	//Intialize values
-	public SchedulerTest() {
-		
-		elevator = new Elevator(7, schedule);
-		floors = new Floors(7);
-		scheduler = new Scheduler(elevator,floors,schedule);
-	}
+	//Intialize values
+		public SchedulerTest() {
+			
+			
+			elevator = new ArrayList<Elevator>();
+			floors = new Floors(7);
+			
+			for(int i=0; i<3; i++) {
+				schedules.add(new ArrayList<Integer>());
+			}
+			
+			for(int i=0; i< 3; i++) {
+				elevator.add(new Elevator(7, schedules.get(i), i));
+			}
+			
+			scheduler = new Scheduler (elevator, floors, schedules, "3000");
+		}
 	 
 
 
-		//This method tests floorButtonPress
-		@Test
-		public void testFloorButtonPress() {
-			
-			//Elevator request made at floor 2 by pressing button (direction is up)
-			//Add floor 2 to scheduler
-			scheduler.FloorButtonPress(2,true);
-			
-			//Check that the schedule contains floor 2
-			assertTrue(scheduler.getQueue().contains(2));
-		}
-	
-		//This method tests elevatorButtonPressed
-		@Test
-		public void testElevatorButtonPressed() {
-			
-			//In the elevator button is pressed to go to floor 3
-			scheduler.elevatorButtonPressed(3, false);
-			
-			//Check that the schedule contains floor 3
-			assertTrue(schedule.contains(3));
-		}
-		
 		//This method tests elevatorLocationUpdated
 		@Test
 		public void testElevatorLocationUpdated() {
-			//Set new location of elevator to floor 5
-			scheduler.elevatorLocationUpdated(5);
+			//Set new location of elevator 1 to floor 5
+			scheduler.elevatorLocationUpdated(1, 5);
 			//Check that the elevator location is 5
-			assertEquals(5, floors.getElevatorFloorIndicator());
+			assertEquals(5, floors.getElevatorFloorIndicator(1));
 		}
 		
 		//This method tests elevatorDirectionUpdated
-		@Test
-		public void testElevatorDirectionUpdated() {
-			//Set new direction for elevator(up=true)
-			scheduler.elevatorDirectionUpdated(true);
-			//Check that new direction is up (true)
-			assertEquals(true, floors.getElevatorDirectionIndicator());
-			
-			//Set new direction for elevator(down=false)
-			scheduler.elevatorDirectionUpdated(false);
-			//Check that new direction is down (false)
-			assertEquals(false, floors.getElevatorDirectionIndicator());
-			
-		}
-		
+				@Test
+				public void testElevatorDirectionUpdated() {
+					//Set new direction for elevator(up=true)
+					scheduler.elevatorDirectionUpdated(1, true);
+					//Check that new direction is up (true)
+					assertEquals(true, floors.getElevatorDirectionIndicator(1));
+					
+					//Set new direction for elevator(down=false)
+					scheduler.elevatorDirectionUpdated(1, false);
+					//Check that new direction is down (false)
+					assertEquals(false, floors.getElevatorDirectionIndicator(1));
+					
+				}
 		
 }

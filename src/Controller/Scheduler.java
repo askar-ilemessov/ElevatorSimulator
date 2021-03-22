@@ -6,11 +6,16 @@ package Controller;
  * each elevator would need their own scheduler.
  */
 
-
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import View.Elevator;
 import View.Floors;
-
+import View.InputFileReader;
+import View.SimulatedArrival;
 
 import assignment3Package.Client;
 
@@ -25,18 +30,16 @@ public class Scheduler extends Thread {
 	private ArrayList<ArrayList<Integer>>  schedules = new ArrayList<ArrayList<Integer>> ();
 	private Client client;
 	public String portNumber;
-//	public Poll pollreceive;
-//	public Thread pollReceiveThread;
+	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);;
 	
-	public Scheduler(ArrayList<Elevator> elevators, Floors floors, ArrayList<ArrayList<Integer>>   schedules, String portNUmber) {
+	public Scheduler(int portNUmber) {
+		this.client = new Client(portNUmber);
+	}
+	public Scheduler(ArrayList<Elevator> elevators, Floors floors, ArrayList<ArrayList<Integer>>   schedules, int portNUmber) {
 		this.elevators = elevators;
 		this.floors = floors;
 		this.schedules = schedules;
-		this.portNumber = portNumber;
-		this.client = new Client(portNUmber, 3005, 3006);
-//		this.pollreceive = new Poll(this.client);
-////		
-//		this.pollReceiveThread = new Thread(pollreceive);
+		this.client = new Client(portNUmber);
 	}
 	
 //	public Scheduler(ArrayList<Integer>  schedule, String portNumber, String elevator, String floors) {
@@ -73,7 +76,6 @@ public class Scheduler extends Thread {
 			schedules.get(sendRequestToElevator).add(originFloor);
 			schedules.get(sendRequestToElevator).notifyAll();
 			
-//			System.out.println("Elevator " + (sendRequestToElevator) + " has received this request to go to " + originFloor);
 		}
 	}
 	
@@ -91,41 +93,10 @@ public class Scheduler extends Thread {
 			schedules.get(sendRequest).add(destinationFloor);
 //			System.out.println("Elevator " + (sendRequest) + " is going to " + destinationFloor);
 			schedules.get(sendRequest).notifyAll();
+		
 		}
 	}
 	
-	
-	
-//	private void addToSchedule(int destinationFloor, boolean direction, int currentFloor) {
-//		synchronized(this.schedule){
-//			
-//			if(schedule.size()==0||schedule.size()==1) {//case for where there is zero one location in the queue
-//				schedule.add(destinationFloor);
-//			}
-//			else {//case for more than one location in the queue:
-//				//go through collection and add at first index where the 
-//				//the diffrence between the floors that would be on either 
-//				//side of the potential stop location indicates travel in 
-//				//the right direction
-//				for(int i = 1; i < schedule.size(); i++) {
-//					if((schedule.get(i-1)-schedule.get(i)) >=0 && direction) {
-//						schedule.add(i+1,floor);
-//						break;
-//					}
-//					else if(schedule.get(i-1)-schedule.get(i) <=0 && !direction) {
-//						schedule.add(i,floor);
-//						break;
-//					}
-//					else {//if the elevator never passes this floor going in the right direction, 
-//						//just add it at the end of the queue
-//						schedule.add(floor);
-//					}
-//				}
-//			}
-//			schedule.notifyAll();
-//		}
-//	}
-//	
 	//Event Handeling_________________________________________________
 	//Performs nessacary tasks in response to events
 	//will be overhauled with the UDP update
@@ -153,11 +124,10 @@ public class Scheduler extends Thread {
 	//update floors
 	public void elevatorLocationUpdated(int elevatorNumber, int floor) {
 //		floors.elevatorLocationUpdated(floor);
-//		String data = "elevatorLocationUpdated" + "," + floor + ":" + floors.portNumber;
 		String data = "elevatorLocationUpdated" + "," + elevatorNumber + "," + floor ;
 		try {
-			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
-//			this.client.sendData(data, floors.portNumber);
+//			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
+			this.client.sendData(data, 3003);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -167,13 +137,12 @@ public class Scheduler extends Thread {
 	
 	//direction updated
 	//update floors
-	public void elevatorDirectionUpdated(boolean direction) {
+	public void elevatorDirectionUpdated(int elevatorNumber, boolean direction) {
 //		floors.elevatorDirectionUpdated(direction);
-//		String data = "elevatorDirectionUpdated" + "," + Boolean.toString(direction) + ":" + floors.portNumber;
-		String data = "elevatorDirectionUpdated" + "," + Boolean.toString(direction);
+		String data = "elevatorDirectionUpdated" + "," + elevatorNumber + "," + Boolean.toString(direction);
 		try {
-			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
-//			this.client.sendData(data, floors.portNumber);
+//			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
+			this.client.sendData(data, 3003);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,56 +151,61 @@ public class Scheduler extends Thread {
 	
 	//elevator stopped
 	//let floors know
-	public void elevatorStopped(int floor, boolean direction) {
+	public void elevatorStopped(int elevatorNumber, int floor, boolean direction) {
 //		floors.elevatorArrived(floor, direction);
-//		String data = "elevatorArrived" + "," + floor + "," + Boolean.toString(direction) + ":" + floors.portNumber;
-		String data = "elevatorArrived" + "," + floor + "," + Boolean.toString(direction);
+		String data = "elevatorArrived" + "," + elevatorNumber + "," + floor + "," + Boolean.toString(direction);
 		try {
-			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
-//			this.client.sendData(data, floors.portNumber);
+//			this.client.sndqueue.add(data + ":" +  floors.portNumber); //should append to client queue
+			this.client.sendData(data, 3003);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void elevatorRequestsWork() {
+	public void elevatorRequestsWork(int elevatorNumber) {
 		//do nothing for now, that might change with multi. elevators
-//		for(Elevator elevator : elevators) {
-//			try {
-//				this.client.sendData("requestWork,", elevator.portNumber);
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
+//		
+	}
+	
+	public class RcvProcess implements Runnable{
+		private Scheduler sch;
+		public RcvProcess(Scheduler sch) {
+			this.sch = sch;
+		}
+		public void run() {
+			while(true) {
+				sch.client.recv(sch.rcvqueue);
+				sch.processRcvQueue();
+			}
+		}
 	}
 	
 	public void processRcvQueue() {
-//		System.out.println("rcvqueue size in scheduler is: " + this.client.rcvqueue.size());
-		while(!this.client.rcvqueue.isEmpty()) {
-			System.out.println("Recvqueue is not empty");
-			String mssg = this.client.rcvqueue.remove();
-			String[] param = mssg.split(",");
+		while(!this.rcvqueue.isEmpty()) {
+			
+			String mssg = this.rcvqueue.remove();
+			String[] param = mssg.trim().split(",");
 			switch(param[0]) {
 				case "FloorButtonPress":
-					System.out.println("Rcv floor button press");
+//					System.out.println("Rcv floor button press");
 					FloorButtonPress(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]));
 					break;
 				case "elevatorButtonPressed":
 					elevatorButtonPressed(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]), Integer.parseInt(param[3]));
 					break;
 				case "elevatorStopped":
-					elevatorStopped(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]));
+					elevatorStopped(Integer.parseInt(param[1]),Integer.parseInt(param[2]), Boolean.parseBoolean(param[3]));
 					break;
 				case "elevatorRequestsWork":
-					System.out.println("elevatorRequestsWork");
-					elevatorRequestsWork();
+//					System.out.println("elevatorRequestsWork" + param[1].trim() + " testiing");
+					elevatorRequestsWork(Integer.parseInt(param[1]));
 					break;
 				case "elevatorLocationUpdated":
 					elevatorLocationUpdated(Integer.parseInt(param[1]), Integer.parseInt(param[2]));
 					break;
 				default:
+					System.out.println("Not1 : " + param[0] + " test");
 					break;
 			}
 			
@@ -240,9 +214,8 @@ public class Scheduler extends Thread {
 	//_________________________________________________________________
 	
 	public void run() {
-		//give floors and elevators a reference to you
-		Thread ClientThread = new Thread(client, "Floors");
-		ClientThread.start();
+		Thread rcvProccessThread = new Thread(new RcvProcess(this));
+		rcvProccessThread.start();
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -252,61 +225,10 @@ public class Scheduler extends Thread {
 		for(Elevator elevator : elevators) {
 			elevator.setScheduler(this);
 		}
-		floors.setScheduler(this);
-//				Thread schedulerClientThread = new Thread(this.client);
-//				schedulerClientThread.setName("schedulerClient");
-//				schedulerClientThread.start();
+		floors.setScheduler(this);		
 		
-		while(true) {			
-//			System.out.println("About to Process recvqueue");
-			processRcvQueue();
-			
-		}
 	}
 	
-//	class Poll implements Runnable{
-//		private Client c;
-//		
-//		public Poll(Client c) {
-//			this.c =c;
-//		}
-//		@Override
-//        public void run() {
-//			try {
-//				c.recieve();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-//	public static void main(String[] str) {
-//		int numberOfFloors = 7;
-//		
-//
-//		// floor numbers in order the elevator is to visit them
-//		// make an array of queues for multiple elevators, one for each elevator
-//		ArrayList<Integer> schedule = new ArrayList<>();
-//		
-//		
-//		//take in the file of arrivals to be simulated and store them to be 
-//		//initialized in floors
-//		InputFileReader ifr = new InputFileReader();
-//		File file = new File("src/Model/InputFile.txt");
-//		ArrayList<SimulatedArrival> list = new ArrayList<SimulatedArrival>();
-//		try {
-//			list = ifr.readInFile(file);
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		
-//		Scheduler scheduler = new Scheduler(schedule, "3002", "3000", "3001");
-//		Thread schedulerThread = new Thread(scheduler, "Scheduler");
-//		schedulerThread.start();
-//		
-//	}
 
 }
 
