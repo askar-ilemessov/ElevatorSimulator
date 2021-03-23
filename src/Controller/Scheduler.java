@@ -38,7 +38,7 @@ public class Scheduler extends Thread {
 	}
 	
 	
-	private void addFloorButtonPressedToSchedule(int originFloor, boolean direction) {
+	private void addFloorButtonPressedToSchedule(int originFloor, boolean direction, int error) {
 		int sendRequestToElevator=30;
 		int difference = 20;
 		
@@ -54,17 +54,26 @@ public class Scheduler extends Thread {
 			}
 		
 		}
-		
-		
-		
+			
 		synchronized(schedules.get(sendRequestToElevator)) {
 			schedules.get(sendRequestToElevator).add(originFloor);
 			schedules.get(sendRequestToElevator).notifyAll();
 			
+			//Get first digit of error code
+			int firstDigit = firstDigit(error);
+
+			//Check if floor error
+			if(firstDigit==1) {
+				//send error to floor
+				//floors.handleError(error);
+			}else if(firstDigit==2) {
+				//send error to scheduler
+				//handleError(error)
+			}
 		}
 	}
 	
-	private void addElevatorButtonPressedToSchedule(int destinationFloor, boolean direction, int currentFloor) {
+	private void addElevatorButtonPressedToSchedule(int destinationFloor, boolean direction, int currentFloor, int error) {
 		int sendRequest = 0;
 		
 		for(int i=0; i<3;i++) {
@@ -78,9 +87,27 @@ public class Scheduler extends Thread {
 			schedules.get(sendRequest).add(destinationFloor);
 //			System.out.println("Elevator " + (sendRequest) + " is going to " + destinationFloor);
 			schedules.get(sendRequest).notifyAll();
+			
+			//Get first digit of error code
+			int firstDigit = firstDigit(error);
+
+			//Check if scheduler error
+			if(firstDigit==3) {
+				//send to elevator
+				//elevators.get(sendRequest).handleError(error);
+
+			}	
 		
 		}
 	}
+	
+	  public int firstDigit(int n) 
+	    { 
+	        while (n >= 10)  
+	            n = n/ 10; 
+	        return n; 
+	    }
+
 	
 	//Event Handeling_________________________________________________
 	//Performs nessacary tasks in response to events
@@ -88,9 +115,9 @@ public class Scheduler extends Thread {
 	
 	//elevator stop request from floor
 	//direction true = up
-	public void FloorButtonPress(int originFloor, boolean direction) {
+	public void FloorButtonPress(int originFloor, boolean direction, int error) {
 		//update schedule
-		this.addFloorButtonPressedToSchedule (originFloor, direction);
+		this.addFloorButtonPressedToSchedule (originFloor, direction, error);
 	}
 	
 	public ArrayList<Integer> getQueue(int elevatorNumber) {
@@ -98,8 +125,8 @@ public class Scheduler extends Thread {
 	}
 	
 	//elevator stop request from elevator
-	public void elevatorButtonPressed(int destinationFloor, boolean direction, int currentFloor) {
-		this.addElevatorButtonPressedToSchedule(destinationFloor, direction, currentFloor);
+	public void elevatorButtonPressed(int destinationFloor, boolean direction, int currentFloor, int error) {
+		this.addElevatorButtonPressedToSchedule(destinationFloor, direction, currentFloor, error);
 	}
 	
 	//State updates from elevator:
