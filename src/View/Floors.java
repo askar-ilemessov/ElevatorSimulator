@@ -39,7 +39,7 @@ public class Floors implements Runnable {
 	//the integers stored in the second array represent destinations those waiting at that floor
 	//those integers do not need to be unique even though elevators only need to respond to unique values in those arrays
 	//as this allows us to track the number of people boarding the elevator later when we consider elevator capacity.
-	private ArrayList<ArrayList<Integer>> waiting; 
+	private ArrayList<Integer>[] waiting; 
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
 	public String portNumber;
 	public Client client;
@@ -55,8 +55,11 @@ public class Floors implements Runnable {
 	public Floors(int numberOfFloors, int numberOfElevators, ArrayList<SimulatedArrival> arrivals, int portNumber) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = arrivals;
-		this.waiting= new ArrayList<ArrayList<Integer>>();
-		
+		this.waiting= new ArrayList[numberOfFloors];
+
+		for(int i=0; i<numberOfFloors; i++) {
+			this.waiting[i] = new ArrayList<Integer>();
+		}
 		for(int i=0; i<numberOfElevators; i++) {
 			this.elevatorDirectionIndicator.add(new Boolean(false));
 			this.elevatorFloorIndicator.add(0);
@@ -113,15 +116,11 @@ public class Floors implements Runnable {
 	//a request for an elevator to visit this floor
 	//(true = up, false = down)
 	//floor = floor number the button is on
-	public void buttonPress( int floor, boolean direction, int error) {
+	public void buttonPress( int floor, boolean direction) {
 		System.out.println("Floor " + floor 
 				+ " requested an elevator going " + (direction? "up": "down"));
 		setLamp(floor, direction, true);
 		
-		
-		// PASS ERROR TO SCHEDULE
-		//scheduler.FloorButtonPress(floor, direction, error)
-
 		String data = "FloorButtonPress" + "," + floor + "," + Boolean.toString(direction);
 		try {
 			this.client.sendData(data,3001); //send remote procedure call to scheduler receive socket
@@ -139,20 +138,15 @@ public class Floors implements Runnable {
 		
 		//call elevator button press in scheduler for each of those waiting 
 		//on this floor and going the appropriate direction
-		
-		for (int i=0; i < waiting.get(floor-1).size(); i++) {
-				//SEND ERROR TO SCHEDULER
-				//scheduler.elevatorButtonPressed(waiting.get(floor-1).get(i), direction, floor,  waiting.get(floor-1).get(i+1)(ERROR);
-			
-				String data = "elevatorButtonPressed" + "," + waiting.get(floor-1).get(i)+ "," + Boolean.toString(direction) + "," + floor;
+		for (int i=0; i < waiting[floor-1].size(); i++) {
+				String data = "elevatorButtonPressed" + "," + waiting[floor-1].get(i) + "," + Boolean.toString(direction) + "," + floor;
 				try {
 					this.client.sendData(data, 3001);//send remote procedure call to scheduler receive socket
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				waiting.get(floor-1).remove(i);
-				waiting.get(floor-1).remove(i+1);
+				waiting[floor-1].remove(i);
 		}
 	}
 	
@@ -218,12 +212,10 @@ public class Floors implements Runnable {
 		        	Thread.sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
 
 		        	//simulate someone at the specified floor pressing the button in the appropriate direction
-		        	buttonPress(arrival.getOriginFloor(), arrival.isDirection(), arrival.getErrorCode());
+		        	buttonPress(arrival.getOriginFloor(), arrival.isDirection());
 		        	
 		        	//add person to collection of waiting people
-		        	waiting.get(arrival.getOriginFloor()-1).add(arrival.getDestinationFloor());
-		        	//add error
-		        	waiting.get(arrival.getOriginFloor()-1).add(arrival.getErrorCode());
+		        	waiting[arrival.getOriginFloor()-1].add(arrival.getDestinationFloor());
      	
 			}	
 			System.out.println("done");

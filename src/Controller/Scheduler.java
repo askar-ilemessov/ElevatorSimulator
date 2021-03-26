@@ -66,13 +66,24 @@ public class Scheduler extends Thread {
 			if(firstDigit==1) {
 				//send error to floor
 				//floors.handleError(error);
+				String data = "handleError" + "," + error;
+				try {
+					this.client.sendData(data, 3003); //send remote procedure call to Floor receive socket
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}else if(firstDigit==2) {
 				//send error to scheduler
-				//handleError(error)
+				handleError(error);
 			}
 		}
 	}
 	
+	public void handleError(int error) {
+		// TODO Auto-generated method stub
+		System.out.print("Scheduler error: " + error);
+	}
 	private void addElevatorButtonPressedToSchedule(int destinationFloor, boolean direction, int currentFloor, int error) {
 		int sendRequest = 0;
 		
@@ -91,10 +102,18 @@ public class Scheduler extends Thread {
 			//Get first digit of error code
 			int firstDigit = firstDigit(error);
 
-			//Check if scheduler error
+			//Check if elevator error
 			if(firstDigit==3) {
 				//send to elevator
-				//elevators.get(sendRequest).handleError(error);
+//				elevators.get(sendRequest).handleError(error);
+				String data = "handleError" + "," + error;
+				try {
+					this.client.sendData(data, (2010 + sendRequest + 1)); //send remote procedure call to elevator recv socket
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 
 			}	
 		
@@ -196,10 +215,10 @@ public class Scheduler extends Thread {
 			String[] param = mssg.trim().split(",");
 			switch(param[0]) {
 				case "FloorButtonPress":
-					FloorButtonPress(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]));
+					FloorButtonPress(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]), Integer.parseInt(param[3]));
 					break;
 				case "elevatorButtonPressed":
-					elevatorButtonPressed(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]), Integer.parseInt(param[3]));
+					elevatorButtonPressed(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]), Integer.parseInt(param[3]),Integer.parseInt(param[4]));
 					break;
 				case "elevatorStopped":
 					elevatorStopped(Integer.parseInt(param[1]),Integer.parseInt(param[2]), Boolean.parseBoolean(param[3]));
@@ -210,6 +229,8 @@ public class Scheduler extends Thread {
 				case "elevatorLocationUpdated":
 					elevatorLocationUpdated(Integer.parseInt(param[1]), Integer.parseInt(param[2]));
 					break;
+				case "handleError":
+					handleError(Integer.parseInt(param[1]));
 				default:
 					break;
 			}
