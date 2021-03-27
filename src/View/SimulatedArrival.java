@@ -20,12 +20,14 @@ public class SimulatedArrival {
 	private final int originFloor;
 	private final boolean direction;
 	private final int destinationFloor;
+	private final int errorCode;
 	
-	public SimulatedArrival(long time, int originFloor, boolean direction, int destinationFloor) {
+	public SimulatedArrival(long time, int originFloor, boolean direction, int destinationFloor, int errorCode) {
 		this.time = time;
 		this.originFloor = originFloor;
 		this.direction = direction;
 		this.destinationFloor = destinationFloor;
+		this.errorCode=errorCode;
 	}
 	
 	public long getTime() {
@@ -42,10 +44,14 @@ public class SimulatedArrival {
 		return destinationFloor;
 	}
 
+	public int getErrorCode() {
+		return errorCode;
+	}
+	
 	@Override
 	public String toString() {
 		return "SimulatedArrival [time=" + time + ", originFloor=" + originFloor + ", direction=" + direction
-				+ ", destinationFloor=" + destinationFloor + "]";
+				+ ", destinationFloor=" + destinationFloor + ",errorCode= " + errorCode + "]"  ;
 	}
 
 }

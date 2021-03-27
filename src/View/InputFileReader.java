@@ -29,7 +29,7 @@ public class InputFileReader {
 			String line = scan.nextLine();
 			String[] fileInfo = line.split(" ");
 		
-				if (fileInfo.length == 4) {
+				if (fileInfo.length == 5) {
 
 					//Time
 					String time = fileInfo[0];
@@ -64,8 +64,11 @@ public class InputFileReader {
 					//Destination Floor
 					int destinationFloorNumber = Integer.parseInt(fileInfo[3]);
 					
+					//Error Code
+					int errorCode = Integer.parseInt(fileInfo[4]);
+					
 					//create a simulated arrival object and add it to my ArrayList of arrivals
-					SimulatedArrival arrival = new SimulatedArrival(timeInMilliseconds, intialFloorNumber, direction, destinationFloorNumber);
+					SimulatedArrival arrival = new SimulatedArrival(timeInMilliseconds, intialFloorNumber, direction, destinationFloorNumber, errorCode);
 					arrivals.add(arrival);
 
 				} else {
