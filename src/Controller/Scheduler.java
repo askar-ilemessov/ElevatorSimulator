@@ -43,9 +43,9 @@ public class Scheduler extends Thread {
 		int difference = 20;
 		
 		for(int i=0; i<3; i++) {
-			System.out.println("Elevator: "+ i);
-			System.out.println("Current Floor: " + elevators.get(i).getCurrentFloor());
-			System.out.println("difference: " + Math.abs(elevators.get(i).getCurrentFloor() - originFloor));
+//			System.out.println("Elevator: "+ i);
+//			System.out.println("Current Floor: " + elevators.get(i).getCurrentFloor());
+//			System.out.println("difference: " + Math.abs(elevators.get(i).getCurrentFloor() - originFloor));
 			
 			if((Math.abs(elevators.get(i).getCurrentFloor() - originFloor) < difference) && (elevators.get(i).getDesination()==null)) {
 				difference = Math.abs(elevators.get(i).getCurrentFloor() - originFloor) ;
@@ -82,7 +82,14 @@ public class Scheduler extends Thread {
 	
 	public void handleError(int error) {
 		// TODO Auto-generated method stub
-		System.out.print("Scheduler error: " + error);
+		if(error==2) {
+			System.out.print("System failure Error (scheduler down)");
+			for (int i=0; i<3; i++) {
+				elevators.get(i).setStateStopped();
+			}
+		}
+		
+		
 	}
 	private void addElevatorButtonPressedToSchedule(int destinationFloor, boolean direction, int currentFloor, int error) {
 		int sendRequest = 0;
@@ -106,7 +113,7 @@ public class Scheduler extends Thread {
 			if(firstDigit==3) {
 				//send to elevator
 				
-				System.out.println("WAS HERE ");
+				//System.out.println("WAS HERE ");
 				String data = "handleError" + "," + error;
 				try {
 					this.client.sendData(data, (2010 + sendRequest + 1)); //send remote procedure call to elevator recv socket
@@ -137,7 +144,7 @@ public class Scheduler extends Thread {
 	//elevator stop request from floor
 	//direction true = up
 	public void FloorButtonPress(int originFloor, boolean direction, int error) {
-		System.out.println("FLOOR BUTTON PRESS" + " ERROR: "+error);
+		//System.out.println("FLOOR BUTTON PRESS" + " ERROR: "+error);
 		
 		
 		//update schedule
@@ -150,7 +157,7 @@ public class Scheduler extends Thread {
 	
 	//elevator stop request from elevator
 	public void elevatorButtonPressed(int destinationFloor, boolean direction, int currentFloor, int error) {
-		System.out.println("ELEVATOR BUTTON PRESS" + " ERROR: "+error);
+		//System.out.println("ELEVATOR BUTTON PRESS" + " ERROR: "+error);
 		this.addElevatorButtonPressedToSchedule(destinationFloor, direction, currentFloor, error);
 	}
 	

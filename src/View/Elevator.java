@@ -70,6 +70,15 @@ public class Elevator implements Runnable {
 	}
 	
 	
+
+	public void setStateStopped() {
+		System.out.println("Elevator " + elevatorNumber +" has stopped");
+		this.currentFloor=0;
+		this.destination=null;
+		System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
+		state = State.WAITING; //Go back and wait for another request
+		//this.state= State.STOPPED;
+	}
 	
 	//floor is index in lamps array
 	//state (true=on)
@@ -211,7 +220,7 @@ public class Elevator implements Runnable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("here!!!");
+				//System.out.println("here!!!");
 			}
 		}
 	}
@@ -291,7 +300,7 @@ public class Elevator implements Runnable {
 		
 		if(error == 31) {
 			System.out.println("Error with Elevator #" + this.getNumber() + " error #" + error);
-			state = State.STOPPED;
+			elevatorStateMachine(State.STOPPED);
 		}
 		
 	}
@@ -306,11 +315,18 @@ public class Elevator implements Runnable {
 		} catch (InterruptedException e) {
 		}
 		
+		elevatorStateMachine(State.WAITING);
+		}
+
+
+
+	public int getNumber() {
+		return elevatorNumber;
+	}
+	
+	public void elevatorStateMachine(State state) {
 		
-		//State state = State.WAITING; //default state is waiting
-		state = State.WAITING;
-		while(true) {
-			
+	while(true) {
 			
 			if(state == State.WAITING) {
 				System.out.println("State: Waiting");
@@ -342,76 +358,17 @@ public class Elevator implements Runnable {
 			}else if(state == State.STOPPED) {
 				
 				//this.stopped(currentFloor);  //destination reached
-				System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
+				//System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
 				System.out.println("Tehcnitians already working on the problem");
 				this.currentFloor=0;
 				this.destination=null;
 				System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
 				state = State.WAITING; //Go back and wait for another request
 				System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
+				}
+		
 			}
-			
-			
-			
-			
-//			switch(state){
-//			
-//				//State 1: Waiting for a Request
-//				case WAITING: 
-////					System.out.println("State: Waiting");
-//					while(destination==null) {
-//						scheduleNewDestination();  //Get request 
-//					}
-//					
-//					//request received
-//
-//					state = State.MOVING;
-//					
-//
-//				//State 2: Elevator is going to destination	
-//				case MOVING: 
-//					//not at destination
-//					if (currentFloor != destination) {
-//						
-//						travelToDestination(); //go to destination
-//					}
-//					else {
-//						state = State.ARRIVED;  
-//					}
-//					
-//					
-//					
-//				
-//				//State 3: Elevator has arrived at destination	
-//				case ARRIVED: 
-//					
-//					this.stopped(currentFloor);  //destination reached
-//			
-//					this.destination=null;
-//					
-//					state = State.WAITING; //Go back and wait for another request
-//					
-//				//State 4: Elevator has arrived at destination	
-//				case STOPPED: 
-//					
-//					//this.stopped(currentFloor);  //destination reached
-//					System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
-//					System.out.println("Tehcnitians already working on the problem");
-//					this.currentFloor=0;
-//					this.destination=null;
-//					System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
-//					state = State.WAITING; //Go back and wait for another request
-//					System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
-//					default:
-//						break;
-//				}
-			}
-		}
-
-
-
-	public int getNumber() {
-		return elevatorNumber;
+		
 	}
 
 }
