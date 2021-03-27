@@ -310,57 +310,101 @@ public class Elevator implements Runnable {
 		//State state = State.WAITING; //default state is waiting
 		state = State.WAITING;
 		while(true) {
-			switch(state){
 			
-				//State 1: Waiting for a Request
-				case WAITING: 
-//					System.out.println("State: Waiting");
-					while(destination==null) {
-						scheduleNewDestination();  //Get request 
-					}
-					
-					//request received
-
-					state = State.MOVING;
-					
-
-				//State 2: Elevator is going to destination	
-				case MOVING: 
-					
-					//not at destination
-					if (currentFloor != destination) {
-						
-						travelToDestination(); //go to destination
-					}
-					else {
-						state = State.ARRIVED;  
-					}
-					
-					
-				
-				//State 3: Elevator has arrived at destination	
-				case ARRIVED: 
-					
-					this.stopped(currentFloor);  //destination reached
 			
-					this.destination=null;
-					
-					state = State.WAITING; //Go back and wait for another request
-					
-				//State 4: Elevator has arrived at destination	
-				case STOPPED: 
-					
-					this.stopped(currentFloor);  //destination reached
-					System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
-					System.out.println("Tehcnitians already working on the problem");
-					this.currentFloor=0;
-					this.destination=null;
-					System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
-					state = State.WAITING; //Go back and wait for another request
-					System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
-					default:
-						break;
+			if(state == State.WAITING) {
+				System.out.println("State: Waiting");
+				while(destination==null) {
+					scheduleNewDestination();  //Get request 
 				}
+				
+				//request received
+
+				state = State.MOVING;
+				
+			}else if(state ==State.MOVING) {
+				//not at destination
+				if (currentFloor != destination) {
+					
+					travelToDestination(); //go to destination
+				}
+				else {
+					state = State.ARRIVED;  
+				}
+				
+			}else if(state == State.ARRIVED) {
+				this.stopped(currentFloor);  //destination reached
+				
+				this.destination=null;
+				
+				state = State.WAITING; //Go back and wait for another request
+				
+			}else if(state == State.STOPPED) {
+				
+				//this.stopped(currentFloor);  //destination reached
+				System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
+				System.out.println("Tehcnitians already working on the problem");
+				this.currentFloor=0;
+				this.destination=null;
+				System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
+				state = State.WAITING; //Go back and wait for another request
+				System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
+			}
+			
+			
+			
+			
+//			switch(state){
+//			
+//				//State 1: Waiting for a Request
+//				case WAITING: 
+////					System.out.println("State: Waiting");
+//					while(destination==null) {
+//						scheduleNewDestination();  //Get request 
+//					}
+//					
+//					//request received
+//
+//					state = State.MOVING;
+//					
+//
+//				//State 2: Elevator is going to destination	
+//				case MOVING: 
+//					//not at destination
+//					if (currentFloor != destination) {
+//						
+//						travelToDestination(); //go to destination
+//					}
+//					else {
+//						state = State.ARRIVED;  
+//					}
+//					
+//					
+//					
+//				
+//				//State 3: Elevator has arrived at destination	
+//				case ARRIVED: 
+//					
+//					this.stopped(currentFloor);  //destination reached
+//			
+//					this.destination=null;
+//					
+//					state = State.WAITING; //Go back and wait for another request
+//					
+//				//State 4: Elevator has arrived at destination	
+//				case STOPPED: 
+//					
+//					//this.stopped(currentFloor);  //destination reached
+//					System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
+//					System.out.println("Tehcnitians already working on the problem");
+//					this.currentFloor=0;
+//					this.destination=null;
+//					System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
+//					state = State.WAITING; //Go back and wait for another request
+//					System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
+//					default:
+//						break;
+//				}
 			}
 		}
 
