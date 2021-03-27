@@ -42,8 +42,11 @@ public class Elevator implements Runnable {
 	enum State {
 		WAITING,
 		MOVING,
-		ARRIVED
+		ARRIVED,
+		STOPPED
 	}
+	//Changed
+	State state = null;
 	
 	
 	public Elevator(int numberOfFloors, ArrayList<Integer> schedule, int elevatorNumber, int portNumber) {
@@ -280,6 +283,19 @@ public class Elevator implements Runnable {
 		}
 	}
 	
+	
+	public void handleError(int error) {
+		
+		if(error == 31) {
+			System.out.println("Error with Elevator #" + this.getNumber() + " error #" + error);
+		}
+		
+		state = State.STOPPED;;
+		
+		
+		
+	}
+	
 	//run()
 	public void run() {
 		Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls
@@ -291,8 +307,8 @@ public class Elevator implements Runnable {
 		}
 		
 		
-		State state = State.WAITING; //default state is waiting
-
+		//State state = State.WAITING; //default state is waiting
+		state = State.WAITING;
 		while(true) {
 			switch(state){
 			
@@ -330,6 +346,19 @@ public class Elevator implements Runnable {
 					this.destination=null;
 					
 					state = State.WAITING; //Go back and wait for another request
+					
+				//State 4: Elevator has arrived at destination	
+				case STOPPED: 
+					
+					this.stopped(currentFloor);  //destination reached
+					System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
+					System.out.println("Tehcnitians already working on the problem");
+					this.currentFloor=0;
+					this.destination=null;
+					System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
+					state = State.WAITING; //Go back and wait for another request
+					System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
+					
 					
 				default:
 					break;
