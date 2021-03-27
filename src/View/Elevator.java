@@ -35,7 +35,7 @@ public class Elevator implements Runnable {
 	private Client client;
 	public int portNumber;
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
-
+	public int error = 0;
 	
 	private int elevatorNumber;
 	
@@ -46,7 +46,7 @@ public class Elevator implements Runnable {
 		STOPPED
 	}
 	//Changed
-	State state = State.WAITING;
+	private State state = State.WAITING;
 	
 	
 	public Elevator(int numberOfFloors, ArrayList<Integer> schedule, int elevatorNumber, int portNumber) {
@@ -270,9 +270,11 @@ public class Elevator implements Runnable {
 			this.e = e;
 		}
 		public void run() {
-			while(true) {
-				e.client.recv(e.rcvqueue);
-				e.processRcvQueue();
+//			synchronized(state) {
+				while(true) {
+					e.client.recv(e.rcvqueue);
+					e.processRcvQueue();
+//				}
 			}
 		}
 	}
@@ -300,23 +302,37 @@ public class Elevator implements Runnable {
 		
 		if(error == 31) {
 			System.out.println("Error with Elevator #" + this.getNumber() + " error #" + error);
-			elevatorStateMachine(State.STOPPED);
+			raiseError(31);
 		}
+
 		
 	}
 	
+	private void raiseError(int error) {
+		this.error = error;
+		
+	}
+	
+	private void checkError() {
+		if(error == 31)state = State.STOPPED;
+	}
+
+
+
 	//run()
 	public void run() {
-		Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls
-		rcvProccessThread.start();
-		//give the Scheduler a second to set the scheduler
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-		}
-		
-		elevatorStateMachine(State.WAITING);
-		}
+//		synchronized(state) {
+			Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls
+			rcvProccessThread.start();
+			//give the Scheduler a second to set the scheduler
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
+			
+			elevatorStateMachine();
+//			}
+	}
 
 
 
@@ -324,8 +340,9 @@ public class Elevator implements Runnable {
 		return elevatorNumber;
 	}
 	
-	public void elevatorStateMachine(State state) {
+	public void elevatorStateMachine() {
 		
+//	synchronized(state) {
 	while(true) {
 			
 			if(state == State.WAITING) {
@@ -337,6 +354,7 @@ public class Elevator implements Runnable {
 				//request received
 
 				state = State.MOVING;
+				checkError();
 				
 			}else if(state ==State.MOVING) {
 				//not at destination
@@ -346,6 +364,7 @@ public class Elevator implements Runnable {
 				}
 				else {
 					state = State.ARRIVED;  
+					checkError();
 				}
 				
 			}else if(state == State.ARRIVED) {
@@ -354,6 +373,13 @@ public class Elevator implements Runnable {
 				this.destination=null;
 				
 				state = State.WAITING; //Go back and wait for another request
+				checkError();
+				
+				
+				
+				
+				
+				
 				
 			}else if(state == State.STOPPED) {
 				
@@ -370,5 +396,6 @@ public class Elevator implements Runnable {
 			}
 		
 	}
+//	}
 
 }
