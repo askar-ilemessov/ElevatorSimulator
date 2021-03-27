@@ -105,10 +105,11 @@ public class Scheduler extends Thread {
 			//Check if elevator error
 			if(firstDigit==3) {
 				//send to elevator
-//				elevators.get(sendRequest).handleError(error);
+				
 				String data = "handleError" + "," + error;
 				try {
 					this.client.sendData(data, (2010 + sendRequest + 1)); //send remote procedure call to elevator recv socket
+					elevators.get(sendRequest).handleError(error);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -213,11 +214,16 @@ public class Scheduler extends Thread {
 			
 			String mssg = this.rcvqueue.remove();
 			String[] param = mssg.trim().split(",");
+			
+			
+			
 			switch(param[0]) {
 				case "FloorButtonPress":
+					//System.out.println(Integer.parseInt(param[3]));
 					FloorButtonPress(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]), Integer.parseInt(param[3]));
 					break;
 				case "elevatorButtonPressed":
+					//System.out.println(Integer.parseInt(param[4]));
 					elevatorButtonPressed(Integer.parseInt(param[1]), Boolean.parseBoolean(param[2]), Integer.parseInt(param[3]),Integer.parseInt(param[4]));
 					break;
 				case "elevatorStopped":
