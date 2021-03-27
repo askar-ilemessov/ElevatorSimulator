@@ -46,7 +46,7 @@ public class Elevator implements Runnable {
 		STOPPED
 	}
 	//Changed
-	State state = null;
+	State state = State.WAITING;
 	
 	
 	public Elevator(int numberOfFloors, ArrayList<Integer> schedule, int elevatorNumber, int portNumber) {
@@ -276,6 +276,9 @@ public class Elevator implements Runnable {
 				case "requestWork":
 					requestWork();
 					break;
+				case "handleError":
+					handleError(Integer.parseInt(param[1]));
+					break;
 				default:
 					break;
 			}
@@ -288,11 +291,8 @@ public class Elevator implements Runnable {
 		
 		if(error == 31) {
 			System.out.println("Error with Elevator #" + this.getNumber() + " error #" + error);
+			state = State.STOPPED;
 		}
-		
-		state = State.STOPPED;;
-		
-		
 		
 	}
 	
@@ -358,10 +358,8 @@ public class Elevator implements Runnable {
 					System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
 					state = State.WAITING; //Go back and wait for another request
 					System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
-					
-					
-				default:
-					break;
+					default:
+						break;
 				}
 			}
 		}
