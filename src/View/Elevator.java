@@ -265,7 +265,7 @@ public class Elevator implements Runnable {
 				long totalTime = endTime-startTime;
 				
 				if(totalTime==10) {
-					raiseError(31);
+					raiseError(33);
 				}
 			}
 			else if(currentFloor > destination){
@@ -286,7 +286,7 @@ public class Elevator implements Runnable {
 				long totalTime = endTime-startTime;
 				
 				if(totalTime==10) {
-					raiseError(31);
+					raiseError(33);
 				}
 			}
 		}
