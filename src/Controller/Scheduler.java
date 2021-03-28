@@ -52,9 +52,8 @@ public class Scheduler extends Thread {
 				
 				sendRequestToElevator = i;
 			}
-		
 		}
-			
+		
 		synchronized(schedules.get(sendRequestToElevator)) {
 			schedules.get(sendRequestToElevator).add(originFloor);
 			schedules.get(sendRequestToElevator).notifyAll();
@@ -63,34 +62,35 @@ public class Scheduler extends Thread {
 			int firstDigit = firstDigit(error);
 
 			//Check if floor error
-			if(firstDigit==1) {
-				//send error to floor
-				//floors.handleError(error);
+//			if(firstDigit==1) {
+//				//send error to floor
+//				//floors.handleError(error);
+//				String data = "handleError" + "," + error;
+//				try {
+//					this.client.sendData(data, 3003); //send remote procedure call to Floor receive socket
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}else 
+				if(firstDigit==2) {
 				String data = "handleError" + "," + error;
 				try {
-					this.client.sendData(data, 3003); //send remote procedure call to Floor receive socket
+					
+					this.client.sendData(data, (2010 + sendRequestToElevator + 1)); //send remote procedure call to elevator recv socket
+					//elevators.get(sendRequest).handleError(error);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}else if(firstDigit==2) {
-				//send error to scheduler
-				handleError(error);
 			}
 		}
+			
 	}
 	
-	public void handleError(int error) {
-		// TODO Auto-generated method stub
-		if(error==2) {
-			System.out.print("System failure Error (scheduler down)");
-			for (int i=0; i<3; i++) {
-				elevators.get(i).setStateStopped();
-			}
-		}
+	
+
 		
-		
-	}
 	private void addElevatorButtonPressedToSchedule(int destinationFloor, boolean direction, int currentFloor, int error) {
 		int sendRequest = 0;
 		
@@ -112,12 +112,10 @@ public class Scheduler extends Thread {
 			//Check if elevator error
 			if(firstDigit==3) {
 				//send to elevator
-				
-				//System.out.println("WAS HERE ");
 				String data = "handleError" + "," + error;
 				try {
 					this.client.sendData(data, (2010 + sendRequest + 1)); //send remote procedure call to elevator recv socket
-					elevators.get(sendRequest).handleError(error);
+					//elevators.get(sendRequest).handleError(error);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -247,8 +245,8 @@ public class Scheduler extends Thread {
 				case "elevatorLocationUpdated":
 					elevatorLocationUpdated(Integer.parseInt(param[1]), Integer.parseInt(param[2]));
 					break;
-				case "handleError":
-					handleError(Integer.parseInt(param[1]));
+//				case "handleError":
+//					handleError(Integer.parseInt(param[1]));
 				default:
 					break;
 			}
