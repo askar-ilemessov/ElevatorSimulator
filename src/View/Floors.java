@@ -228,7 +228,9 @@ public class Floors implements Runnable {
 			for(SimulatedArrival arrival : arrivals) {
 				
 					//sleep until the next arrival is scheduled
-		        	Thread.sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
+					if (arrival.getTime() >= (System.currentTimeMillis() - startTime)) {
+						Thread.sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
+					}
 
 		        	//simulate someone at the specified floor pressing the button in the appropriate direction
 		        	buttonPress(arrival.getOriginFloor(), arrival.isDirection(), arrival.getErrorCode());
