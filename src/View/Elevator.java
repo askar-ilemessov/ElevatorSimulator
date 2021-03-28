@@ -3,6 +3,8 @@ package View;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -31,11 +33,13 @@ public class Elevator implements Runnable {
 	
 	private ArrayList<Integer>  schedule;
 	private Integer destination = null;
+
 	
 	private Client client;
 	public int portNumber;
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
 	public int error = 0;
+	public int errorCode = 0;
 	
 	private int elevatorNumber;
 	
@@ -71,15 +75,14 @@ public class Elevator implements Runnable {
 	
 	
 
-	public void setStateStopped() {
-		System.out.println("Elevator " + elevatorNumber +" has stopped");
-		this.currentFloor=0;
-		this.destination=null;
-		System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
-		state = State.WAITING; //Go back and wait for another request
-		//this.state= State.STOPPED;
+	public int getErrorCode() {
+		return errorCode;
 	}
 	
+	public void setErrorCode(int code) {
+		this.errorCode=code;
+		
+	}
 	//floor is index in lamps array
 	//state (true=on)
 	private void setLamp(int floor, boolean state) {
@@ -243,6 +246,13 @@ public class Elevator implements Runnable {
 	private void travelToDestination() {
 		while(currentFloor != destination) {
 			if (currentFloor < destination){
+				Timer timer1 = new Timer();
+				TimerTask task = new Error1();
+				timer1.schedule(task, 10000);
+				
+				long startTime= System.currentTimeMillis();
+				
+				
 				 //go up a floor
 				setMotor(1);
 				try {
@@ -251,8 +261,19 @@ public class Elevator implements Runnable {
 				}
 				locationUpdate(currentFloor + 1);
 				
+				long endTime = System.currentTimeMillis();
+				long totalTime = endTime-startTime;
+				
+				if(totalTime==10) {
+					raiseError(31);
+				}
 			}
 			else if(currentFloor > destination){
+				Timer timer3 = new Timer();
+				TimerTask task3 = new Error1();
+				timer3.schedule(task3, 10000);
+				
+				long startTime= System.currentTimeMillis();
 				//go down a floor
 				setMotor(2);
 				try {
@@ -260,6 +281,13 @@ public class Elevator implements Runnable {
 				} catch (InterruptedException e) {
 				}
 				locationUpdate(currentFloor - 1);
+				
+				long endTime = System.currentTimeMillis();
+				long totalTime = endTime-startTime;
+				
+				if(totalTime==10) {
+					raiseError(31);
+				}
 			}
 		}
 	}
@@ -298,15 +326,24 @@ public class Elevator implements Runnable {
 	}
 	
 	
+	public void setStateStopped() {
+		raiseError(11);
+	}
+	
 	public void handleError(int error) {
 		
 		if(error == 31) {
-			System.out.println("Error with Elevator #" + this.getNumber() + " error #" + error);
+			System.out.println("Elevator " + this.getNumber() + " has a COMPLETE SYSTEM FAILURE");
+			System.out.println("Elevator " + this.getNumber() + " has been stopped");
 			raiseError(31);
+		}else if (error == 32) {
+			System.out.println("Elevator " + this.getNumber() + " has a DOOR SENSOR ERROR");
+			raiseError(32);
+		}else if (error ==33) {
+			setErrorCode(error);
 		}
-
-		
 	}
+	
 	
 	private void raiseError(int error) {
 		this.error = error;
@@ -314,7 +351,9 @@ public class Elevator implements Runnable {
 	}
 	
 	private void checkError() {
-		if(error == 31)state = State.STOPPED;
+		if(error == 31 || error == 32 || error == 33) {
+			state = State.STOPPED;
+		}
 	}
 
 
@@ -346,13 +385,13 @@ public class Elevator implements Runnable {
 	while(true) {
 			
 			if(state == State.WAITING) {
-				System.out.println("State: Waiting");
 				while(destination==null) {
 					scheduleNewDestination();  //Get request 
 				}
 				
 				//request received
-
+				
+			
 				state = State.MOVING;
 				checkError();
 				
@@ -360,42 +399,52 @@ public class Elevator implements Runnable {
 				//not at destination
 				if (currentFloor != destination) {
 					
+					if(getErrorCode()==33) {
+					
+						Timer timer2 = new Timer();
+						TimerTask task1 = new Error1();
+						timer2.schedule(task1, 0, 10000);
+						raiseError(33);
+						setErrorCode(0);
+					}
+					
+//					Timer timer1 = new Timer();
+//					TimerTask task = new Error1();
+//					timer1.schedule(task, 10000);
 					travelToDestination(); //go to destination
 				}
 				else {
 					state = State.ARRIVED;  
-					checkError();
 				}
+				checkError();
 				
 			}else if(state == State.ARRIVED) {
+				
 				this.stopped(currentFloor);  //destination reached
 				
 				this.destination=null;
 				
 				state = State.WAITING; //Go back and wait for another request
 				checkError();
-				
-				
-				
-				
-				
-				
+					
 				
 			}else if(state == State.STOPPED) {
 				
 				//this.stopped(currentFloor);  //destination reached
 				//System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
-				System.out.println("Tehcnitians already working on the problem");
+				System.out.println("Problem is being worked on");
 				this.currentFloor=0;
 				this.destination=null;
-				System.out.println("Elevetor #" + this.getNumber() + " has been set to default state and has been send to floor #" + this.getCurrentFloor());
+				System.out.println("Elevator " + this.getNumber() + " has been set to default state and has been send to floor " + this.getCurrentFloor());
+				System.out.println("The issue with "+"Elevator" + this.getNumber() + " has been fixed");
 				state = State.WAITING; //Go back and wait for another request
-				System.out.println("The issue with "+"Elevetor #" + this.getNumber() + " has been fixed and Elevator setted to Waiting state");
+				
 				}
 		
-			}
+			}	
 		
 	}
-//	}
+	
+
 
 }
