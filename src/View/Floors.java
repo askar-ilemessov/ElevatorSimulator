@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingQueue;
 
 import Controller.Scheduler;
 import assignment3Package.Client;
-
+// yasin Jaamac floors
 
 
 /**
@@ -39,7 +39,7 @@ public class Floors implements Runnable {
 	//the integers stored in the second array represent destinations those waiting at that floor
 	//those integers do not need to be unique even though elevators only need to respond to unique values in those arrays
 	//as this allows us to track the number of people boarding the elevator later when we consider elevator capacity.
-	private ArrayList<Integer>[] waiting; 
+	private ArrayList<ArrayList<Integer>> waiting; 
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
 	public String portNumber;
 	public Client client;
@@ -55,11 +55,13 @@ public class Floors implements Runnable {
 	public Floors(int numberOfFloors, int numberOfElevators, ArrayList<SimulatedArrival> arrivals, int portNumber) {
 		lamps = new boolean [numberOfFloors] [2];
 		this.arrivals = arrivals;
-		this.waiting= new ArrayList[numberOfFloors];
-
+		
+		this.waiting= new ArrayList<ArrayList<Integer>>();
 		for(int i=0; i<numberOfFloors; i++) {
-			this.waiting[i] = new ArrayList<Integer>();
+			ArrayList<Integer> a1 = new ArrayList<Integer>();
+			this.waiting.add(a1);
 		}
+		
 		for(int i=0; i<numberOfElevators; i++) {
 			this.elevatorDirectionIndicator.add(new Boolean(false));
 			this.elevatorFloorIndicator.add(0);
@@ -85,7 +87,7 @@ public class Floors implements Runnable {
 	}
 	
 	public boolean getLampValue(int floor, boolean direction) {
-		return lamps[floor][(direction? 1 : 0)];
+		return lamps[floor][(direction? 1 : 0)]; 
 	}
 	
 	public void setElevatorFloorIndicator(int elevatorNumber, int floor) {
@@ -116,12 +118,16 @@ public class Floors implements Runnable {
 	//a request for an elevator to visit this floor
 	//(true = up, false = down)
 	//floor = floor number the button is on
-	public void buttonPress( int floor, boolean direction) {
+	public void buttonPress( int floor, boolean direction, int error) {
 		System.out.println("Floor " + floor 
 				+ " requested an elevator going " + (direction? "up": "down"));
 		setLamp(floor, direction, true);
 		
-		String data = "FloorButtonPress" + "," + floor + "," + Boolean.toString(direction);
+		
+		// PASS ERROR TO SCHEDULE for error
+		//scheduler.FloorButtonPress(floor, direction, error)
+
+		String data = "FloorButtonPress" + "," + floor + "," + Boolean.toString(direction)+ "," + error;
 		try {
 			this.client.sendData(data,3001); //send remote procedure call to scheduler receive socket
 		} catch (Exception e) {
@@ -138,15 +144,22 @@ public class Floors implements Runnable {
 		
 		//call elevator button press in scheduler for each of those waiting 
 		//on this floor and going the appropriate direction
-		for (int i=0; i < waiting[floor-1].size(); i++) {
-				String data = "elevatorButtonPressed" + "," + waiting[floor-1].get(i) + "," + Boolean.toString(direction) + "," + floor;
+		
+		for (int i=0; i < waiting.get(floor-1).size(); i++) {
+				//SEND ERROR TO SCHEDULER
+				//scheduler.elevatorButtonPressed(waiting.get(floor-1).get(i), direction, floor,  waiting.get(floor-1).get(i+1)(ERROR);
+			    int error = waiting.get( floor-1).get(i+1);
+;				String data = "elevatorButtonPressed" + "," + waiting.get(floor-1).get(i)+ "," + Boolean.toString(direction) + "," + floor + "," + error;
 				try {
 					this.client.sendData(data, 3001);//send remote procedure call to scheduler receive socket
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				waiting[floor-1].remove(i);
+				
+				waiting.get(floor-1).remove(i+1);
+				waiting.get(floor-1).remove(i);
+				
 		}
 	}
 	
@@ -185,11 +198,17 @@ public class Floors implements Runnable {
 				case "elevatorArrived":
 					elevatorArrived(Integer.parseInt(param[1]), Integer.parseInt(param[2]), Boolean.parseBoolean(param[3]));
 					break;
+				case "handleError":
+					handleError(Integer.parseInt(param[1]));
+					break;
 				default:
 					;
 			}
 			
 		}
+	}
+	public void handleError(int error) {
+		System.out.print(" A floor error: " + error);
 	}
 	//_________________________________________________________________
 	
@@ -209,13 +228,17 @@ public class Floors implements Runnable {
 			for(SimulatedArrival arrival : arrivals) {
 				
 					//sleep until the next arrival is scheduled
-		        	Thread.sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
+					if (arrival.getTime() >= (System.currentTimeMillis() - startTime)) {
+						Thread.sleep(arrival.getTime() - (System.currentTimeMillis() - startTime));
+					}
 
 		        	//simulate someone at the specified floor pressing the button in the appropriate direction
-		        	buttonPress(arrival.getOriginFloor(), arrival.isDirection());
+		        	buttonPress(arrival.getOriginFloor(), arrival.isDirection(), arrival.getErrorCode());
 		        	
 		        	//add person to collection of waiting people
-		        	waiting[arrival.getOriginFloor()-1].add(arrival.getDestinationFloor());
+		        	waiting.get(arrival.getOriginFloor()-1).add(arrival.getDestinationFloor());
+		        	//add error
+		        	waiting.get(arrival.getOriginFloor()-1).add(arrival.getErrorCode());
      	
 			}	
 			System.out.println("done");
