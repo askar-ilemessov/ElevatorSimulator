@@ -15,7 +15,7 @@ import View.Floors;
 import assignment3Package.Client;
 
 /**
- * @author madelynkrasnay IfiokUdoh YasinJaamac
+ * @author madelynkrasnay IfiokUdoh YasinJaamac DanishButt
  *
  */
 public class Scheduler extends Thread {
@@ -43,10 +43,6 @@ public class Scheduler extends Thread {
 		int difference = 20;
 		
 		for(int i=0; i<3; i++) {
-//			System.out.println("Elevator: "+ i);
-//			System.out.println("Current Floor: " + elevators.get(i).getCurrentFloor());
-//			System.out.println("difference: " + Math.abs(elevators.get(i).getCurrentFloor() - originFloor));
-			
 			if((Math.abs(elevators.get(i).getCurrentFloor() - originFloor) < difference) && (elevators.get(i).getDesination()==null)) {
 				difference = Math.abs(elevators.get(i).getCurrentFloor() - originFloor) ;
 				
@@ -60,19 +56,7 @@ public class Scheduler extends Thread {
 			
 			//Get first digit of error code
 			int firstDigit = firstDigit(error);
-
-			//Check if floor error
-//			if(firstDigit==1) {
-//				//send error to floor
-//				//floors.handleError(error);
-//				String data = "handleError" + "," + error;
-//				try {
-//					this.client.sendData(data, 3003); //send remote procedure call to Floor receive socket
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}else 
+			
 				if(firstDigit==2) {
 				String data = "handleError" + "," + error;
 				try {

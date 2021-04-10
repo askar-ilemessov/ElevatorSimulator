@@ -246,9 +246,6 @@ public class Elevator implements Runnable {
 	private void travelToDestination() {
 		while(currentFloor != destination) {
 			if (currentFloor < destination){
-				Timer timer1 = new Timer();
-				TimerTask task = new Error1();
-				timer1.schedule(task, 10000);
 				
 				long startTime= System.currentTimeMillis();
 				
@@ -269,9 +266,6 @@ public class Elevator implements Runnable {
 				}
 			}
 			else if(currentFloor > destination){
-				Timer timer3 = new Timer();
-				TimerTask task3 = new Error1();
-				timer3.schedule(task3, 10000);
 				
 				long startTime= System.currentTimeMillis();
 				//go down a floor
@@ -340,6 +334,9 @@ public class Elevator implements Runnable {
 			System.out.println("Elevator " + this.getNumber() + " has a DOOR SENSOR ERROR");
 			raiseError(32);
 		}else if (error ==33) {
+			System.out.println("Elevator " + this.getNumber() + " has a FLOOR SENSOR ERROR");
+			System.out.println("The elevator took too long to reach the floor");
+			System.out.println("Check if the elevator is stuck or if the arrival sensor has failed");
 			setErrorCode(error);
 		}
 	}
@@ -401,11 +398,13 @@ public class Elevator implements Runnable {
 					
 					if(getErrorCode()==33) {
 					
-						Timer timer2 = new Timer();
-						TimerTask task1 = new Error1();
-						timer2.schedule(task1, 0, 10000);
+//						Timer timer2 = new Timer();
+//						TimerTask task1 = new Error1();
+//						timer2.schedule(task1, 0, 10000);
+						
 						raiseError(33);
 						setErrorCode(0);
+						checkError();	
 					}
 					
 //					Timer timer1 = new Timer();
