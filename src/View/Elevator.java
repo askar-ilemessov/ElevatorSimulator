@@ -246,17 +246,16 @@ public class Elevator implements Runnable {
 	private void travelToDestination() {
 		while(currentFloor != destination) {
 			if (currentFloor < destination){
-				Timer timer1 = new Timer();
-				TimerTask task = new Error1();
-				timer1.schedule(task, 10000);
 				
 				long startTime= System.currentTimeMillis();
 				
 				
 				 //go up a floor
 				setMotor(1);
+				
+				//Simulating elevator moving up
 				try {
-					Thread.sleep(500);//however long we decide it take for an elevator to climb a floor
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 				}
 				locationUpdate(currentFloor + 1);
@@ -269,15 +268,14 @@ public class Elevator implements Runnable {
 				}
 			}
 			else if(currentFloor > destination){
-				Timer timer3 = new Timer();
-				TimerTask task3 = new Error1();
-				timer3.schedule(task3, 10000);
 				
 				long startTime= System.currentTimeMillis();
 				//go down a floor
 				setMotor(2);
+				
+				//Simulating elevator moving down
 				try {
-					Thread.sleep(500);//however long we decide it take for an elevator to descend a floor
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 				}
 				locationUpdate(currentFloor - 1);
@@ -340,6 +338,9 @@ public class Elevator implements Runnable {
 			System.out.println("Elevator " + this.getNumber() + " has a DOOR SENSOR ERROR");
 			raiseError(32);
 		}else if (error ==33) {
+			System.out.println("Elevator " + this.getNumber() + " has a FLOOR SENSOR ERROR");
+			System.out.println("The elevator took too long to reach the floor");
+			System.out.println("Check if the elevator is stuck or if the arrival sensor has failed");
 			setErrorCode(error);
 		}
 	}
@@ -400,17 +401,11 @@ public class Elevator implements Runnable {
 				if (currentFloor != destination) {
 					
 					if(getErrorCode()==33) {
-					
-						Timer timer2 = new Timer();
-						TimerTask task1 = new Error1();
-						timer2.schedule(task1, 0, 10000);
 						raiseError(33);
 						setErrorCode(0);
+						checkError();	
 					}
 					
-//					Timer timer1 = new Timer();
-//					TimerTask task = new Error1();
-//					timer1.schedule(task, 10000);
 					travelToDestination(); //go to destination
 				}
 				else {
@@ -419,9 +414,14 @@ public class Elevator implements Runnable {
 				checkError();
 				
 			}else if(state == State.ARRIVED) {
+				this.stopped(currentFloor);  //destination reached 
 				
-				this.stopped(currentFloor);  //destination reached
-				
+				//Wait 2 seconds to simulate doors opening/closing
+				 try {
+					 Thread.sleep(2000);
+		            } catch (InterruptedException e)  {
+		               System.out.println("Error while wating");
+		            }
 				this.destination=null;
 				
 				state = State.WAITING; //Go back and wait for another request
