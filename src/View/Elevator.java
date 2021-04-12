@@ -11,6 +11,7 @@ import java.util.concurrent.BlockingQueue;
 import Controller.Scheduler;
 import View.Floors.RcvProcess;
 import assignment3Package.Client;
+import gui.ErrorPopUp;
 
 /**
  * @author madelynkrasnay, Danish Butt, ifiok udoh, yasin Jaamac
@@ -329,19 +330,31 @@ public class Elevator implements Runnable {
 	}
 	
 	public void handleError(int error) {
-		
+		String s;
+		ErrorPopUp e;
 		if(error == 31) {
-			System.out.println("Elevator " + this.getNumber() + " has a COMPLETE SYSTEM FAILURE");
-			System.out.println("Elevator " + this.getNumber() + " has been stopped");
+			s = "Elevator " + this.getNumber() + " has a COMPLETE SYSTEM FAILURE\n" + "Elevator " 
+							+ this.getNumber() + " has been stopped";
+			System.out.println(s);
 			raiseError(31);
+			e = new ErrorPopUp(s);
+			Thread err = new Thread(e);
+			err.start();
 		}else if (error == 32) {
-			System.out.println("Elevator " + this.getNumber() + " has a DOOR SENSOR ERROR");
+			s = "Elevator " + this.getNumber() + " has a DOOR SENSOR ERROR";
+			System.out.println(s);
 			raiseError(32);
+			e = new ErrorPopUp(s);
+			Thread err = new Thread(e);
+			err.start();
 		}else if (error ==33) {
-			System.out.println("Elevator " + this.getNumber() + " has a FLOOR SENSOR ERROR");
-			System.out.println("The elevator took too long to reach the floor");
-			System.out.println("Check if the elevator is stuck or if the arrival sensor has failed");
+			s = "Elevator " + this.getNumber() + " has a FLOOR SENSOR ERROR\n" + "The elevator took too long to reach the floor\n"
+							+ "Check if the elevator is stuck or if the arrival sensor has failed";
+			System.out.println(s);
 			setErrorCode(error);
+			e = new ErrorPopUp(s);
+			Thread err = new Thread(e);
+			err.start();
 		}
 	}
 	

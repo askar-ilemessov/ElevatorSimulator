@@ -14,7 +14,16 @@ The Floor subsystem and the Elevators are the clients in the system; the Schedul
 Each line of input is to be sent to the Scheduler. The elevators will then make calls to the Scheduler which will then reply when there is work to be done.
 The Elevator will then send the data back to the Scheduler who will then send it back to the Floor.   
 The Scheduler is only being used as a communication channel from the Floor thread to the Elevator thread and back again.   
- 
+
+##Install XChart Java library
+The jar for XChart Java library can be downloaded from [here](https://knowm.org/open-source/xchart/xchart-change-log/)
+### Add Xchart Jar to Eclipse Workspace:
+-In open eclipse project, click on **project** located at the top on the tool bar 
+-From the presented dropdown menu click on **properties**
+-From the displayed window, locate and click on **Java Build Path**
+-Select **classpath** and click **Add External JARs**
+-From the dispaled window, navigate to the folder containing the downloaded Xchart JAr, select it and click open
+-Select **Apply and Close**
 Class Descriptions:
 
 src/Controller/Main.java
@@ -44,6 +53,13 @@ src/Model/InputFile.txt
 	contains input data in the format a time stamp, white space, an integer representing the floor on which the passenger 
 	is making a request, white space, a string consisting of either “Up” or “Down”, more white space, then an integer 
 	representing floor button  within  the  elevator  which  is  providing  service  to  the  passenger.
+src/assignment3Package/Client.java
+	Provides communication between subsystems over UDP
+src/gui/SimpleRealTime.java
+	Displays graph on GUI showing position of elevators in system
+src/gui/ErrorPopUp
+Displays pop up  GUI containing information on detected errors
+
 Error codes:
 31-system failure
 32- door sensor error

@@ -28,7 +28,11 @@ public class InputFileReader {
 
 			String line = scan.nextLine();
 			String[] fileInfo = line.split(" ");
-		
+//			for(int i = 0; i< fileInfo.length; i++) {
+//				System.out.println(fileInfo[i]);
+//			}
+//			System.out.println("fileInfo Length is : " + fileInfo.length);
+//		
 				if (fileInfo.length == 5) {
 
 					//Time
