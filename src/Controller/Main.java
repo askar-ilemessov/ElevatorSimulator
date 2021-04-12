@@ -7,6 +7,7 @@ import View.Elevator;
 import View.Floors;
 import View.InputFileReader;
 import View.SimulatedArrival;
+import gui.SimpleRealTime;
 
 /**
  * 
@@ -46,6 +47,7 @@ class Main {
 					elevators.add(new Elevator(numberOfFloors, elevatorSchedules.get(i), i, i*2)); //set port to i*2 to accommodate for 2 ports per elevator, ! for sending and 1 for receiving
 					elevatorThreads.add(new Thread(elevators.get(i), "Elevator "+i));
 				}
+				SimpleRealTime graph = new SimpleRealTime(elevators);
 
 				//Floor Subsytem Thread on port 3002
 				Floors floors = new Floors(numberOfFloors, numberOfElevators, list, 3002);
@@ -55,7 +57,9 @@ class Main {
 				Scheduler scheduler = new Scheduler(elevators, floors, elevatorSchedules, 3000);
 				Thread schedulerThread = new Thread(scheduler, "Scheduler");
 				
-				
+				graph.display();
+				Thread graphThread = new Thread(graph, "graph");
+				graphThread.start();
 				for(int i=0; i<numberOfElevators; i++) {
 					elevatorThreads.get(i).start();
 				}
