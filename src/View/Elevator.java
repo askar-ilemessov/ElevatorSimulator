@@ -446,9 +446,12 @@ public class Elevator implements Runnable {
 				//this.stopped(currentFloor);  //destination reached
 				//System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
 				System.out.println("Problem is being worked on");
-				this.currentFloor=0;
-				this.destination=null;
-				System.out.println("Elevator " + this.getNumber() + " has been set to default state and has been send to floor " + this.getCurrentFloor());
+//				this.currentFloor=0;
+//				this.destination=null;
+				this.destination=0; //Set destination to Floor 0
+				travelToDestination(); //Travel to Floor 0
+				this.destination=null; //Set destination to null
+				System.out.println("Elevator " + this.getNumber() + " has been set to default state and has been sent to floor " + this.getCurrentFloor());
 				System.out.println("The issue with "+"Elevator" + this.getNumber() + " has been fixed");
 				state = State.WAITING; //Go back and wait for another request
 				
