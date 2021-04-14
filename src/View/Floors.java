@@ -92,7 +92,7 @@ public class Floors implements Runnable {
 	
 	public void setElevatorFloorIndicator(int elevatorNumber, int floor) {
 		elevatorFloorIndicator.set(elevatorNumber, floor);
-		System.out.println("Floors' location indicator for " + elevatorNumber +
+		System.out.println("Floors' location indicator for Elevator " + elevatorNumber +
 				" now reads " + elevatorFloorIndicator.get(elevatorNumber));
 	}
 	
@@ -177,7 +177,7 @@ public class Floors implements Runnable {
 			this.f = f;
 		}
 		public void run() {
-			while(true) {
+			while(client.isOpen()) {
 				f.client.recv(f.rcvqueue);
 				f.processRcvQueue();
 			}
@@ -212,8 +212,6 @@ public class Floors implements Runnable {
 	}
 	//_________________________________________________________________
 	
-	
-	//run()
 	//should wait to be notified by the scheduler
 	//should notify arrivals as they appear in the floor input file
 	public void run() {
@@ -241,12 +239,45 @@ public class Floors implements Runnable {
 		        	waiting.get(arrival.getOriginFloor()-1).add(arrival.getErrorCode());
      	
 			}	
-			System.out.println("done");
 		} catch (InterruptedException e) {
 		
 		}
+		
+
+		while(true) {
+			//if the last request has begun being processed...
+			if(waiting.stream().allMatch(q -> q.isEmpty())	/*waitingIsEmpty()*/) {
+				
+				//sleep for the maximum time it would take to service a request
+				//(the full length of the building or 5s travel time * num of floors)
+				//I know this is really hacky but I honestly don't know what else to do
+				try {
+					Thread.sleep(5000*waiting.size());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				//program has ended
+				//close all resources
+				//scheduler.releaseResourses();
+				/*
+				 * Due to The way message passing was set up it is ridiculously hard to release 
+				 * all resources. Due to time constraints It's better to just have the user close 
+				 * the program as we had been doing. This has the consequence of making integration 
+				 * tests fail to run. to test the system you must manually change the file in main 
+				 * to the desired test file, marked 'inputFile-testcasename'.
+				 * 
+				 */
+				break;
+			}
+		}
+		
 	}
 
 
+	public void closeClient() {
+		this.client.close();
+	}
 
 }

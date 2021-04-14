@@ -6,86 +6,70 @@ Floor 2 requested an elevator going up
 The lamp on floor 2 for the direction up is now on
 Floor 5 requested an elevator going down
 The lamp on floor 5 for the direction down is now on
-done
 Elevator 0 has the new destination of floor 2
+Elevator 0 is going up
 Elevator 1 has the new destination of floor 5
-Elevator 0 is going up
 Elevator 1 is going up
-Elevator 0 is now at floor 1
 Elevator 1 is now at floor 1
-Elevator 0 is going up
-Floors' location indicator for 0 now reads 1
+Elevator 0 is now at floor 1
 Elevator 1 is going up
-Floors' location indicator for 1 now reads 1
+Elevator 0 is going up
+Floors' location indicator for Elevator 0 now reads 1
+Floors' location indicator for Elevator 1 now reads 1
 Elevator 1 is now at floor 2
 Elevator 0 is now at floor 2
-Elevator0 stopped at floor 2
-Elevator 0 door is now open
-Loading elevator0's car...
-
 Elevator 1 is going up
-Floors' location indicator for 1 now reads 2
-Floors' location indicator for 0 now reads 2
+Elevator0 stopped at floor 2
+Floors' location indicator for Elevator 1 now reads 2
+Floors' location indicator for Elevator 0 now reads 2
 An elevator arrived at 2 going up
 The lamp on floor 2 for the direction up is now off
-Elevator sending to :0
-Elevator sending to :1
-Elevator 1 is now at floor 3
-Elevator 1 is going up
-Floors' location indicator for 1 now reads 3
-Elevator 1 is now at floor 4
-Elevator 1 is going up
-Floors' location indicator for 1 now reads 4
-Elevator 1 is now at floor 5
-Elevator1 stopped at floor 5
-Elevator 1 door is now open
-Loading elevator1's car...
+Elevator 0 door is now open
+Loading elevator 0's car...
 
-Floors' location indicator for 1 now reads 5
-An elevator arrived at 5 going up
-The lamp on floor 5 for the direction up is now off
-Elevator sending to :1
+Elevator 1 is now at floor 3
 Elevator 0 door is now closed
 Elevator 0 is on standby
+Elevator 1 is going up
+Floors' location indicator for Elevator 1 now reads 3
+Elevator 1 is now at floor 4
+Elevator 1 is going up
+Floors' location indicator for Elevator 1 now reads 4
+Elevator 1 is now at floor 5
+Elevator1 stopped at floor 5
+Floors' location indicator for Elevator 1 now reads 5
+An elevator arrived at 5 going up
+The lamp on floor 5 for the direction up is now off
+Elevator 1 door is now open
+Loading elevator 1's car...
+
 Elevator 1 door is now closed
 Elevator 1 has the new destination of floor 4
 Elevator 1 is going down
 Elevator 1 is now at floor 4
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
 Elevator1 stopped at floor 4
-Elevator 1 door is now open
-Loading elevator1's car...
-
-Floors' location indicator for 1 now reads 4
+Floors' location indicator for Elevator 1 now reads 4
 An elevator arrived at 4 going down
 The lamp on floor 4 for the direction down is now off
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
+Elevator 1 door is now open
+Loading elevator 1's car...
+
 Elevator 1 door is now closed
-Elevator 1 has the new destination of floor 3
+Elevator 1 has the new destination of floor 1
 Elevator 1 is going down
 Elevator 1 is now at floor 3
-Elevator1 stopped at floor 3
+Elevator 1 is going down
+Floors' location indicator for Elevator 1 now reads 3
+Elevator 1 is now at floor 2
+Elevator 1 is going down
+Floors' location indicator for Elevator 1 now reads 2
+Elevator 1 is now at floor 1
+Elevator1 stopped at floor 1
+Floors' location indicator for Elevator 1 now reads 1
+An elevator arrived at 1 going down
+The lamp on floor 1 for the direction down is now off
 Elevator 1 door is now open
-Loading elevator1's car...
+Loading elevator 1's car...
 
-Floors' location indicator for 1 now reads 3
-An elevator arrived at 3 going down
-The lamp on floor 3 for the direction down is now off
-The elevator took too long to reach the floor
-Check if the elevator is stuck or if the arrival sensor has failed
 Elevator 1 door is now closed
 Elevator 1 is on standby

@@ -89,4 +89,13 @@ public class Client implements Runnable{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void close() {
+		sndSocket.close();
+		rcvSocket.close();
+	}
+	
+	public boolean isOpen() {
+		return !sndSocket.isClosed() && !rcvSocket.isClosed();
+	}
 }

@@ -1,20 +1,16 @@
 package View;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import Controller.Scheduler;
-import View.Floors.RcvProcess;
 import assignment3Package.Client;
 import gui.ErrorPopUp;
 
 /**
- * @author madelynkrasnay, Danish Butt, ifiok udoh, yasin Jaamac
+ * @author Madelyn Krasnay, Danish Butt, ifiok udoh, yasin Jaamac
  *
  */
 public class Elevator implements Runnable {
@@ -36,7 +32,7 @@ public class Elevator implements Runnable {
 	private Integer destination = null;
 
 	
-	private Client client;
+	public Client client;
 	public int portNumber;
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
 	public int error = 0;
@@ -50,7 +46,7 @@ public class Elevator implements Runnable {
 		ARRIVED,
 		STOPPED
 	}
-	//Changed
+
 	private State state = State.WAITING;
 	
 	
@@ -64,7 +60,11 @@ public class Elevator implements Runnable {
 
 	}
 	
-
+	//Getters and Setters_________________________________________________________________
+	
+	public int getNumber() {
+		return elevatorNumber;
+	}
 	
 	public void setSchedule(ArrayList<Integer>  schedule) {
 		this.schedule = schedule;
@@ -91,7 +91,7 @@ public class Elevator implements Runnable {
 	}
 	
 	
-	//(0=stoped, 1=moving up, 2=moving down)
+	//(0=stopped, 1=moving up, 2=moving down)
 	public void setMotor(int state) {
 		motor = state;
 		if(state == 1) {
@@ -145,10 +145,10 @@ public class Elevator implements Runnable {
 	}
 	
 	//Event Handeling_________________________________________________
-	//Performs nessacary tasks in response to events
+	//Performs nesacary tasks in response to events
 	
 	//stop requested
-	//updates scheduler of an interternal floor button was pressed
+	//updates scheduler of an internal floor button was pressed
 	//call in floors according to input file
 	public void buttonPress(int destinationFloor) {
 		setLamp(destinationFloor, true);
@@ -195,21 +195,36 @@ public class Elevator implements Runnable {
 		
 		//turn off lamp
 		setLamp(location, false);
+		//Wait 1 seconds to simulate doors opening
+		 try {
+			 Thread.sleep(1000);
+           } catch (InterruptedException e)  {
+              System.out.println("Error while opening door.");
+           }
+		this.destination=null;
 		//open doors
 		setDoor(true);
+		
 		//wait to load
 		try {
-			System.out.println("Loading elevator" + elevatorNumber + "'s car...\n");
+			System.out.println("Loading elevator " + elevatorNumber + "'s car...\n");
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//Wait 1 seconds to simulate doors closing
+		 try {
+			 Thread.sleep(1000);
+           } catch (InterruptedException e)  {
+              System.out.println("Error while closing door.");
+           }
+		this.destination=null;
 		//close doors
 		setDoor(false);
 	}
 	
-	//_________________________________________________________________
+	//Elevator Actions_________________________________________________________________
 	
 	private void scheduleNewDestination() {
 		//set Destination to the top of the queue and pop
@@ -221,10 +236,8 @@ public class Elevator implements Runnable {
 				try {
 					schedule.wait();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				//System.out.println("here!!!");
 			}
 		}
 	}
@@ -244,7 +257,7 @@ public class Elevator implements Runnable {
 	}
 	
 	
-	private void travelToDestination() {
+	protected void travelToDestination() {
 		while(currentFloor != destination) {
 			if (currentFloor < destination){
 				
@@ -291,17 +304,18 @@ public class Elevator implements Runnable {
 		}
 	}
 	
+	//RCV procesing_________________________________________________________________
+	
 	public class RcvProcess implements Runnable{
 		private Elevator e;
 		public RcvProcess(Elevator e) {
 			this.e = e;
 		}
 		public void run() {
-//			synchronized(state) {
-				while(true) {
+
+				while(client.isOpen()) {
 					e.client.recv(e.rcvqueue);
 					e.processRcvQueue();
-//				}
 			}
 		}
 	}
@@ -324,17 +338,13 @@ public class Elevator implements Runnable {
 		}
 	}
 	
-	
-	public void setStateStopped() {
-		raiseError(11);
-	}
+	//Error handeling_________________________________________________________________
 	
 	public void handleError(int error) {
 		String s;
 		ErrorPopUp e;
 		if(error == 31) {
-			s = "Elevator " + this.getNumber() + " has a COMPLETE SYSTEM FAILURE\n" + "Elevator " 
-							+ this.getNumber() + " has been stopped";
+			s = "Elevator " + this.getNumber() + " has a COMPLETE SYSTEM FAILURE\n";
 			System.out.println(s);
 			raiseError(31);
 			e = new ErrorPopUp(s);
@@ -366,15 +376,14 @@ public class Elevator implements Runnable {
 	
 	private void checkError() {
 		if(error == 31 || error == 32 || error == 33) {
-			state = State.STOPPED;
+			this.setStateStopped();
 		}
 	}
 
-
+	//Run and state machiene_________________________________________________________________
 
 	//run()
 	public void run() {
-//		synchronized(state) {
 			Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls
 			rcvProccessThread.start();
 			//give the Scheduler a second to set the scheduler
@@ -384,18 +393,16 @@ public class Elevator implements Runnable {
 			}
 			
 			elevatorStateMachine();
-//			}
 	}
-
-
-
-	public int getNumber() {
-		return elevatorNumber;
+	
+	public void setStateStopped() {
+		raiseError(11);
+		this.state = State.STOPPED;
+		System.out.println("Elevator " + this.getNumber()+ " has been sent to the ground floor and brought off line.");
 	}
 	
 	public void elevatorStateMachine() {
 		
-//	synchronized(state) {
 	while(true) {
 			
 			if(state == State.WAITING) {
@@ -404,7 +411,6 @@ public class Elevator implements Runnable {
 				}
 				
 				//request received
-				
 			
 				state = State.MOVING;
 				checkError();
@@ -429,13 +435,6 @@ public class Elevator implements Runnable {
 			}else if(state == State.ARRIVED) {
 				this.stopped(currentFloor);  //destination reached 
 				
-				//Wait 2 seconds to simulate doors opening/closing
-				 try {
-					 Thread.sleep(2000);
-		            } catch (InterruptedException e)  {
-		               System.out.println("Error while wating");
-		            }
-				this.destination=null;
 				
 				state = State.WAITING; //Go back and wait for another request
 				checkError();
@@ -443,22 +442,26 @@ public class Elevator implements Runnable {
 				
 			}else if(state == State.STOPPED) {
 				
-				//this.stopped(currentFloor);  //destination reached
-				//System.out.println("Elevator #"+this.getNumber() + " has been stucked between floors: " + (this.getCurrentFloor()-1) + " and " + this.getCurrentFloor());
-				System.out.println("Problem is being worked on");
-//				this.currentFloor=0;
-//				this.destination=null;
+				System.out.println("Elevator " + this.getNumber() + " has been sent to the ground floor and brought off line.");
+				
 				this.destination=0; //Set destination to Floor 0
-				travelToDestination(); //Travel to Floor 0
+				travelToDestination(); //Travel to Floor 
+				this.setDoor(true);//open door
 				this.destination=null; //Set destination to null
-				System.out.println("Elevator " + this.getNumber() + " has been set to default state and has been sent to floor " + this.getCurrentFloor());
-				System.out.println("The issue with "+"Elevator" + this.getNumber() + " has been fixed");
+				
+				//create error request code for repair complete?
+				
+				System.out.println("The issue with elevator " + this.getNumber() + " has been fixed");
 				state = State.WAITING; //Go back and wait for another request
 				
 				}
 		
 			}	
 		
+	}
+
+	public void closeClient() {
+		this.client.close();
 	}
 	
 

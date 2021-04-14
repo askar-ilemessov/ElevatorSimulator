@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class IntegrationTests {
+	//note: some things, like what order elevator 
+	//threads start up in are non deterministic. 
+	//If a test fails, it may not be a problem: 
+	//please manually check output in that case.
 	
     private  ByteArrayOutputStream outContent;
     private  PrintStream originalOut;
@@ -62,7 +66,7 @@ public class IntegrationTests {
 	@Test
 	public void distantRequest() {
 		int numberOfFloors = 7;
-		int numberOfElevators = 2;
+		int numberOfElevators = 3;
 		File file = new File("src/Model/InputFile-DistantRequestTest.txt");
 
 		Main.startSimulation(numberOfFloors, numberOfElevators, file);
