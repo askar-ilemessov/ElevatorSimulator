@@ -23,7 +23,7 @@ public class Scheduler extends Thread {
 	private ArrayList<Elevator> elevators;
 	private Floors floors;
 	private ArrayList<ArrayList<Integer>>  schedules = new ArrayList<ArrayList<Integer>> ();
-	private Client client;
+	private Client client; //Client for remote procedure call over UDP
 	public String portNumber;
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);;
 	
@@ -203,13 +203,12 @@ public class Scheduler extends Thread {
 		}
 	}
 	
+	//Process remote procedure calls received into rcv queue
 	public void processRcvQueue() {
 		while(!this.rcvqueue.isEmpty()) {
 			
 			String mssg = this.rcvqueue.remove();
 			String[] param = mssg.trim().split(",");
-			
-			
 			
 			switch(param[0]) {
 				case "FloorButtonPress":
