@@ -1,6 +1,12 @@
 package View;
-//This class tests the methods in the elevator class
-//@author Danish Butt
+//This class tests the methods in the elevator class' local variable management.
+//It's tests ensure that the states of elevator resources (such as lights and doors) 
+//respond as expected when the elevator's state is changed. The fact that the elevator 
+//behaves as expected in the system is ensured threw integration tests 
+//(found in Controller/IntegrationTests). These integration tests also check the 
+//state of the local variables, but unit tests allow for easier debugging in the 
+//event an integration test fails.
+//@author Danish Butt, Madelyn Krasnay
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,7 +18,10 @@ class ElevatorTest {
 	
 	//Create Elevator object
 	private ArrayList <Integer> schedule = new ArrayList<>();
-	private Elevator elevator = new Elevator(7, schedule);
+	private Elevator elevator = new Elevator(7, schedule, 0, 0);
+	
+	//Setters
+	//_______________________________________________________________
 	
 	//This methods tests setMotor
 		@Test
@@ -76,5 +85,16 @@ class ElevatorTest {
 			assertEquals(3, elevator.getCurrentFloor());
 		}
 		
+		//More complex local state changing functions
+		//_______________________________________________________________
+		
+		@Test
+		public void testTravelToDestination() {
+			elevator.setCurrentFloor(3);
+			elevator.setDesination(5);
+			elevator.travelToDestination();
+			
+			assertEquals(5, elevator.getCurrentFloor());
+		}
 	
 }

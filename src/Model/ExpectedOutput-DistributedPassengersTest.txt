@@ -1,0 +1,65 @@
+Elevator 0 is on standby
+Elevator 1 is on standby
+Elevator 2 is on standby
+Simulation starting...
+Floor 2 requested an elevator going up
+The lamp on floor 2 for the direction up is now on
+Floor 4 requested an elevator going up
+The lamp on floor 4 for the direction up is now on
+Floor 5 requested an elevator going up
+The lamp on floor 5 for the direction up is now on
+Floor 4 requested an elevator going up
+The lamp on floor 4 for the direction up is now on
+Elevator 0 has the new destination of floor 2
+Floor 1 requested an elevator going up
+Elevator 0 is going up
+The lamp on floor 1 for the direction up is now on
+Elevator 1 has the new destination of floor 4
+Elevator 1 is going up
+Floor 4 requested an elevator going up
+The lamp on floor 4 for the direction up is now on
+Elevator 2 has the new destination of floor 4
+Elevator 2 is going up
+Elevator 1 is now at floor 1
+Elevator 2 is now at floor 1
+Elevator 0 is now at floor 1
+Elevator 0 is going up
+Elevator 2 is going up
+Elevator 1 is going up
+Elevator 0 is now at floor 2
+Elevator 2 is now at floor 2
+Elevator 1 is now at floor 2
+Elevator0 stopped at floor 2
+Elevator 2 is going up
+Elevator 1 is going up
+Elevator 0 door is now open
+Loading elevator 0's car...
+
+Elevator 2 is now at floor 3
+Elevator 1 is now at floor 3
+Elevator 0 door is now closed
+Elevator 0 is on standby
+Elevator 2 is going up
+Elevator 1 is going up
+Elevator 1 is now at floor 4
+Elevator 2 is now at floor 4
+Elevator2 stopped at floor 4
+Elevator1 stopped at floor 4
+Elevator 2 door is now open
+Loading elevator 2's car...
+
+Elevator 1 door is now open
+Loading elevator 1's car...
+
+Elevator 1 door is now closed
+Elevator 2 door is now closed
+Elevator 1 has the new destination of floor 5
+Elevator 1 is going up
+Elevator 2 is on standby
+Elevator 1 is now at floor 5
+Elevator1 stopped at floor 5
+Elevator 1 door is now open
+Loading elevator 1's car...
+
+Elevator 1 door is now closed
+Elevator 1 is on standby

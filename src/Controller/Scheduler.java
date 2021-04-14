@@ -91,7 +91,6 @@ public class Scheduler extends Thread {
 		//Finds which elevator the request came from
 		for(int i=0; i<3;i++) {
 			if(elevators.get(i).getCurrentFloor()== currentFloor) {
-				System.out.println("Elevator sending to :" + elevators.get(i).getNumber());
 				sendRequest = i;
 			}	
 		}
@@ -205,7 +204,7 @@ public class Scheduler extends Thread {
 			this.sch = sch;
 		}
 		public void run() {
-			while(true) {
+			while(client.isOpen()) {
 				sch.client.recv(sch.rcvqueue);
 				sch.processRcvQueue();
 			}
@@ -250,16 +249,20 @@ public class Scheduler extends Thread {
 	public void run() {
 		Thread rcvProccessThread = new Thread(new RcvProcess(this));//Create and start thread to process received remote procedure calls 
 		rcvProccessThread.start();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		for(Elevator elevator : elevators) {
 			elevator.setScheduler(this);
 		}
 		floors.setScheduler(this);		
+		
+	}
+	
+	public void releaseResourses() {
+		for(Elevator elevator : elevators){
+			elevator.closeClient();
+		}
+		floors.closeClient();
+		this.client.close();
 		
 	}
 	

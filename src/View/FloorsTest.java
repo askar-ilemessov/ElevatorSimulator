@@ -1,5 +1,12 @@
-//@author Danish Butt
-//This class tests the methods in the floors class
+
+//This class tests the methods in the floors class' local variable management.
+//It's tests ensure that the states of elevator resources (such as lights) 
+//respond as expected when the floor's state is changed. The fact that the floors 
+//behave as expected in the system is ensured threw integration tests 
+//(found in Controller/IntegrationTests). These integration tests also check the 
+//state of the local variables, but unit tests allow for easier debugging in the 
+//event an integration test fails.
+//@author Danish Butt, Madelyn Krasnay
 
 
 package View;
@@ -12,7 +19,7 @@ import org.junit.jupiter.api.Test;
 class FloorsTest {
 
 		//Create Floors object
-		private Floors floor = new Floors(7, "2002");
+		private Floors floor = new Floors(7, 2002);
 		
 		
 		
@@ -41,10 +48,10 @@ class FloorsTest {
 		public void testSetElevatorFloorIndicator() {
 			
 			//Set the floor indicator to floor 3
-			floor.setElevatorFloorIndicator(3);
+			floor.setElevatorFloorIndicator(3, 0);
 			
 			//Checks that floor indicator reads floor 3
-			assertEquals(3,floor.getElevatorFloorIndicator());
+			assertEquals(3,floor.getElevatorFloorIndicator(0));
 		}
 		
 		//This method tests setElevatorDirectionIndicator
@@ -52,16 +59,16 @@ class FloorsTest {
 		public void testSetElevatorDirectionIndicator() {
 			
 			//Set the elevator direction to up(true)
-			floor.setElevatorDirectionIndicator(true);
+			floor.setElevatorDirectionIndicator(0, true);
 			
 			//Checks that elevator direction is up (true)
-			assertEquals(true, floor.getElevatorDirectionIndicator());
+			assertEquals(true, floor.getElevatorDirectionIndicator(0));
 			
 			//Set the elevator direction to down (false)
-			floor.setElevatorDirectionIndicator(false);
+			floor.setElevatorDirectionIndicator(0, false);
 			
 			//Checks that elevator direction is down (false)
-			assertEquals(false, floor.getElevatorDirectionIndicator());
+			assertEquals(false, floor.getElevatorDirectionIndicator(0));
 			
 		}
 			
@@ -69,9 +76,9 @@ class FloorsTest {
 		@Test
 		public void testElevatorLocationUpdated() {
 			//Update elevator location to floor 5
-			floor.elevatorLocationUpdated(5);
+			floor.elevatorLocationUpdated(5, 0);
 			//Checks that new location is 5
-			assertEquals(5,floor.getElevatorFloorIndicator()); 
+			assertEquals(5,floor.getElevatorFloorIndicator(0)); 
 		}
 				
 		
@@ -79,9 +86,9 @@ class FloorsTest {
 		@Test
 		public void testElevatorDirectionUpdated() {
 			//Update elevator direction to up
-			floor.elevatorDirectionUpdated(true);
+			floor.elevatorDirectionUpdated(0, true);
 			//Checks that elevator direction has been changed to up
-			assertEquals(true,floor.getElevatorDirectionIndicator());
+			assertEquals(true,floor.getElevatorDirectionIndicator(0));
 		}
 			
 		
