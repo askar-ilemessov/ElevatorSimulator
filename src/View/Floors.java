@@ -42,7 +42,7 @@ public class Floors implements Runnable {
 	private ArrayList<ArrayList<Integer>> waiting; 
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
 	public String portNumber;
-	public Client client;
+	public Client client; //Client for remote procedure call over UDP
 
 	
 	public Floors(int numberOfFloors, int portNumber) {
@@ -184,6 +184,7 @@ public class Floors implements Runnable {
 		}
 	}
 	
+	//Process remote procedure calls received into rcv queue
 	public void processRcvQueue() {
 		while(!this.rcvqueue.isEmpty()) {
 			String mssg = this.rcvqueue.remove();

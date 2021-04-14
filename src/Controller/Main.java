@@ -82,7 +82,7 @@ class Main {
 
 		int numberOfFloors = 7;
 		int numberOfElevators = 3;
-		File file = new File("src/Model/InputFile-ElevatorErrorTest.txt");
+		File file = new File("src/Model/InputFile.txt");
 		
 
 		startSimulation(numberOfFloors, numberOfElevators, file);

@@ -30,9 +30,7 @@ public class Elevator implements Runnable {
 	
 	private ArrayList<Integer>  schedule;
 	private Integer destination = null;
-
-	
-	public Client client;
+	private Client client; //Client for remote procedure call over UDP
 	public int portNumber;
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);
 	public int error = 0;
@@ -40,6 +38,8 @@ public class Elevator implements Runnable {
 	
 	private int elevatorNumber;
 	
+	
+	//Different states for State Machine
 	enum State {
 		WAITING,
 		MOVING,
@@ -75,7 +75,6 @@ public class Elevator implements Runnable {
 	}
 	
 	
-
 	public int getErrorCode() {
 		return errorCode;
 	}
@@ -84,6 +83,7 @@ public class Elevator implements Runnable {
 		this.errorCode=code;
 		
 	}
+	
 	//floor is index in lamps array
 	//state (true=on)
 	private void setLamp(int floor, boolean state) {
@@ -100,7 +100,6 @@ public class Elevator implements Runnable {
 		else if (state == 2) {
 			setDirection(false);
 		}
-		
 	}
 	
 	public int getMotor() {
@@ -226,6 +225,7 @@ public class Elevator implements Runnable {
 	
 	//Elevator Actions_________________________________________________________________
 	
+
 	private void scheduleNewDestination() {
 		//set Destination to the top of the queue and pop
 		synchronized(schedule){
@@ -257,12 +257,12 @@ public class Elevator implements Runnable {
 	}
 	
 	
+	//This method is used to travel to a destination
 	protected void travelToDestination() {
 		while(currentFloor != destination) {
 			if (currentFloor < destination){
 				
-				long startTime= System.currentTimeMillis();
-				
+				long startTime= System.currentTimeMillis();   //This is used to get the start time of the elevator moving
 				
 				 //go up a floor
 				setMotor(1);
@@ -272,18 +272,19 @@ public class Elevator implements Runnable {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 				}
+				
 				locationUpdate(currentFloor + 1);
 				
-				long endTime = System.currentTimeMillis();
+				long endTime = System.currentTimeMillis();    //This is used to get the end time of the elevator moving
 				long totalTime = endTime-startTime;
 				
-				if(totalTime==10) {
+				if(totalTime >9) {                           //If the total time taken is 10 or higher trigger door sensor error
 					raiseError(33);
 				}
 			}
 			else if(currentFloor > destination){
 				
-				long startTime= System.currentTimeMillis();
+				long startTime= System.currentTimeMillis();  //This is used to get the start time of the elevator moving
 				//go down a floor
 				setMotor(2);
 				
@@ -293,11 +294,11 @@ public class Elevator implements Runnable {
 				} catch (InterruptedException e) {
 				}
 				locationUpdate(currentFloor - 1);
-				
-				long endTime = System.currentTimeMillis();
+				 
+				long endTime = System.currentTimeMillis();   //This is used to get the end time of the elevator moving
 				long totalTime = endTime-startTime;
 				
-				if(totalTime==10) {
+				if(totalTime>9) {                         //If the total time taken is 10 or higher trigger door sensor error
 					raiseError(33);
 				}
 			}
@@ -320,6 +321,7 @@ public class Elevator implements Runnable {
 		}
 	}
 	
+	//Process remote procedure calls received into rcv queue
 	public void processRcvQueue() {
 		if(!this.rcvqueue.isEmpty()) {
 			String mssg = this.rcvqueue.remove();
@@ -340,6 +342,7 @@ public class Elevator implements Runnable {
 	
 	//Error handeling_________________________________________________________________
 	
+	//Handles different error codes 
 	public void handleError(int error) {
 		String s;
 		ErrorPopUp e;
@@ -374,6 +377,7 @@ public class Elevator implements Runnable {
 		
 	}
 	
+	//Checks if an error code has happened
 	private void checkError() {
 		if(error == 31 || error == 32 || error == 33) {
 			this.setStateStopped();
@@ -411,7 +415,6 @@ public class Elevator implements Runnable {
 				}
 				
 				//request received
-			
 				state = State.MOVING;
 				checkError();
 				
@@ -441,7 +444,6 @@ public class Elevator implements Runnable {
 					
 				
 			}else if(state == State.STOPPED) {
-				
 				System.out.println("Elevator " + this.getNumber() + " has been sent to the ground floor and brought off line.");
 				
 				this.destination=0; //Set destination to Floor 0
@@ -455,15 +457,10 @@ public class Elevator implements Runnable {
 				state = State.WAITING; //Go back and wait for another request
 				
 				}
-		
 			}	
-		
 	}
 
 	public void closeClient() {
 		this.client.close();
 	}
-	
-
-
 }
