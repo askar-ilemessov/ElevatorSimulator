@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
  */
 public class ErrorPopUp implements Runnable
 {
-	private String infoMessagein;
+	private String infoMessagein; //Message to display in popup
 	private String titleBarin;
 	public ErrorPopUp(String infoMessage) {
 		infoMessagein = infoMessage;

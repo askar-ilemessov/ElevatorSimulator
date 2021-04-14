@@ -23,7 +23,7 @@ public class Scheduler extends Thread {
 	private ArrayList<Elevator> elevators;
 	private Floors floors;
 	private ArrayList<ArrayList<Integer>>  schedules = new ArrayList<ArrayList<Integer>> ();
-	private Client client;
+	private Client client; //Client for remote procedure call over UDP
 	public String portNumber;
 	public BlockingQueue<String> rcvqueue = new ArrayBlockingQueue<String>(10);;
 	
@@ -38,10 +38,16 @@ public class Scheduler extends Thread {
 	}
 	
 	
+	/*
+	 * This method is used to add a floor button request to the scheduler
+	 */
+	
 	private void addFloorButtonPressedToSchedule(int originFloor, boolean direction, int error) {
 		int sendRequestToElevator=30;
 		int difference = 20;
 		
+		
+		//Find the closest elevator to the floor
 		for(int i=0; i<3; i++) {
 			if((Math.abs(elevators.get(i).getCurrentFloor() - originFloor) < difference) && (elevators.get(i).getDesination()==null)) {
 				difference = Math.abs(elevators.get(i).getCurrentFloor() - originFloor) ;
@@ -57,6 +63,7 @@ public class Scheduler extends Thread {
 			//Get first digit of error code
 			int firstDigit = firstDigit(error);
 			
+
 				if(firstDigit==2) {
 				String data = "handleError" + "," + error;
 				try {
@@ -74,10 +81,14 @@ public class Scheduler extends Thread {
 	
 	
 
-		
+	
+	/*
+	 * This method is used to add an elevator button request to the specific elevator it came from	
+	 */
 	private void addElevatorButtonPressedToSchedule(int destinationFloor, boolean direction, int currentFloor, int error) {
 		int sendRequest = 0;
 		
+		//Finds which elevator the request came from
 		for(int i=0; i<3;i++) {
 			if(elevators.get(i).getCurrentFloor()== currentFloor) {
 				System.out.println("Elevator sending to :" + elevators.get(i).getNumber());
@@ -85,9 +96,9 @@ public class Scheduler extends Thread {
 			}	
 		}
 	
+		//Adds request to the elevator schedule
 		synchronized(this.schedules.get(sendRequest)) {
 			schedules.get(sendRequest).add(destinationFloor);
-//			System.out.println("Elevator " + (sendRequest) + " is going to " + destinationFloor);
 			schedules.get(sendRequest).notifyAll();
 			
 			//Get first digit of error code
@@ -104,13 +115,11 @@ public class Scheduler extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-
 			}	
-		
 		}
 	}
 	
+	//This method is used to get the first digit of a number (used in error handling)
 	  public int firstDigit(int n) 
 	    { 
 	        while (n >= 10)  
@@ -203,13 +212,12 @@ public class Scheduler extends Thread {
 		}
 	}
 	
+	//Process remote procedure calls received into rcv queue
 	public void processRcvQueue() {
 		while(!this.rcvqueue.isEmpty()) {
 			
 			String mssg = this.rcvqueue.remove();
 			String[] param = mssg.trim().split(",");
-			
-			
 			
 			switch(param[0]) {
 				case "FloorButtonPress":
