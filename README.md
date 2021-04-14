@@ -15,6 +15,9 @@ Each line of input is to be sent to the Scheduler. The elevators will then make 
 The Elevator will then send the data back to the Scheduler who will then send it back to the Floor.   
 The Scheduler is only being used as a communication channel from the Floor thread to the Elevator thread and back again.   
 
+## Execution Instructions
+Run the JAR file "ElevatorSimulator.jar" from the command line with "java -jar ElevatorSimulator.jar. This JAR reads the input file at "src/Model/InputFile.txt" so this file can be edited to test different cases.
+
 ## Install XChart Java library
 The GUI uses an external dependency called chart. The JAR for this is included in the submission, but can also be downloaded [here](https://knowm.org/open-source/xchart/xchart-change-log/)
 
