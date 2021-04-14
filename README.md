@@ -1,7 +1,7 @@
 # ElevatorSimulator
 README:
-February 27, 2021
-Sysc 3303 Iteration 4
+April 14, 2021
+Sysc 3303 Iteration 5
 Professor Franks
 
 List of Team Members and Responsibilities:
@@ -16,13 +16,15 @@ The Elevator will then send the data back to the Scheduler who will then send it
 The Scheduler is only being used as a communication channel from the Floor thread to the Elevator thread and back again.   
 
 ## Install XChart Java library
-The jar for XChart Java library can be downloaded from [here](https://knowm.org/open-source/xchart/xchart-change-log/)
+The GUI uses an external dependency called chart. The JAR for this is included in the submission, but can also be downloaded [here](https://knowm.org/open-source/xchart/xchart-change-log/)
+
 ### Add Xchart Jar to Eclipse Workspace:
+While the dependency is included in the packaged JAR for our project, running our code in eclipse will require you add the chart JAR to your classpath.
 - In open eclipse project, click on **project** located at the top on the tool bar 
 - From the presented dropdown menu click on **properties**
 - From the displayed window, locate and click on **Java Build Path**
-- Select **classpath** and click **Add External JARs**
-- From the dispaled window, navigate to the folder containing the downloaded Xchart JAr, select it and click open
+- Select the **Libraries** tab and select **classpath** and click **Add External JARs**
+- From the displaled window, navigate to the folder containing the Xchart JAR, select it and click open
 - Select **Apply and Close**
 
 ## Class Descriptions:
